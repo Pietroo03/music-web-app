@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head(${title})"></th:block>
+</head>
+
+<body>
+    <div class="container my-5">
+        <h2 class="mb-4 text-center">
+            [[${edit} ? 'Modifica Album' : 'Aggiungi un nuovo Album']]
+        </h2>
+
+        <form th:action="${edit} ? @{|/albums/edit/${album.id}|} : @{/albums/create}" id="album-form"
+            th:object="${album}" method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="mb-3">
+                <label for="nome" class="form-label fs-4">Nome</label>
+                <input type="text" id="nome" class="form-control" th:field="*{nome}" th:errorClass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}">
+                    <ul>
+                        <li th:each="error : ${#fields.errors('nome')}">
+                            <span th:text="${error}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="foto" class="form-label fs-4">Foto URL</label>
+                <input type="text" id="foto" class="form-control" th:field="*{foto}" th:errorClass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('foto')}">
+                    <ul>
+                        <li th:each="error : ${#fields.errors('foto')}">
+                            <span th:text="${error}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="tracce" class="form-label fs-4">Tracce</label>
+                <input type="number" id="tracce" class="form-control" th:field="*{tracce}" th:errorClass="is-invalid">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('tracce')}">
+                    <ul>
+                        <li th:each="error : ${#fields.errors('tracce')}">
+                            <span th:text="${error}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-3 d-flex gap-3">
+                <div class="flex-grow-1">
+                    <label for="artista" class="form-label fs-4">Artista</label>
+                    <select id="artista" class="form-select" th:field="*{artista}" th:errorClass="is-invalid">
+                        <option value="">-- Seleziona un artista --</option>
+                        <option th:each="artista : ${artisti}" th:value="${artista.id}" th:text="${artista.alias}">
+                        </option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('artista')}">
+                        <ul>
+                            <li th:each="error : ${#fields.errors('artista')}" th:text="${error}"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1">
+                    <label for="dataPubblicazione" class="form-label fs-4">Data di Pubblicazione</label>
+                    <input type="date" id="dataPubblicazione" class="form-control" th:field="*{dataPubblicazione}"
+                        th:errorClass="is-invalid">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dataPubblicazione')}">
+                        <ul>
+                            <li th:each="error : ${#fields.errors('dataPubblicazione')}">
+                                <span th:text="${error}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mb-3">
+                <label for="descrizione" class="form-label fs-4">Descrizione</label>
+                <textarea id="descrizione" class="form-control" th:field="*{descrizione}"
+                    th:errorClass="is-invalid"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('descrizione')}">
+                    <ul>
+                        <li th:each="error : ${#fields.errors('descrizione')}">
+                            <span th:text="${error}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="generi" class="form-label fs-4">Generi</label>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="form-check form-check-inline" th:each="genere : ${generi}">
+                        <input class="form-check-input" type="checkbox" th:field="*{generi}" th:value="${genere.id}"
+                            th:id="'genere-' + ${genere.id}" style="transform: scale(1.5);">
+                        <label class="form-check-label ms-1" th:for="'genere-' + ${genere.id}"
+                            th:text="${genere.nome}"></label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Salva Album</button>
+                <a th:href="@{/albums}" class="btn btn-secondary">Annulla</a>
+            </div>
+        </form>
+
+    </div>
+</body>
+
+
+
+</html>

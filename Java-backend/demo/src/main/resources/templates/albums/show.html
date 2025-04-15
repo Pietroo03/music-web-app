@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head(${album.nome})"></th:block>
+</head>
+
+<body th:object="${album}">
+    <div class=" container my-5">
+
+
+        <div th:if="${album != null} ">
+            <h1 class=" text-center mb-4" th:text="*{nome}">
+            </h1>
+            <div class="card shadow-lg border-0 h-100 mx-auto my-4" style="max-width: 800px;">
+                <img th:src="*{foto}" class="card-img-top" style="height: 350px; object-fit: cover;" alt="*{nome}">
+                <div class="card-body">
+                    <h2 class="card-title" th:text="*{nome}"></h2>
+                    <p class="card-text"><strong>Artista:</strong> <span th:text="*{artista.alias}"></span></p>
+                    <p class="card-text"><strong>Data di Pubblicazione:</strong> <span
+                            th:text="*{formattedDataPubblicazione}"></span></p>
+                    <p class="card-text"><strong>Tracce:</strong> <span th:text="*{tracce}"></span></p>
+                    <p class="card-text"><strong>Descrizione:</strong> <span th:text=" *{descrizione}"></span></p>
+                    <p class=" card-text"><strong>Generi:</strong>
+                        <span th:each="genere : ${album.generi}" th:text="|${genere.nome} |"></span>
+                    </p>
+                    <div class="d-flex justify-content-around">
+                        <a th:href="@{/albums}" class="btn btn-secondary">Torna agli Album</a>
+                        <a th:href="@{/artists/{id} (id = *{artista.id})}" class="btn btn-primary">Vedi
+                            [[*{artista.alias}]]</a>
+                        <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/albums/edit/{id} (id = ${album.id})}"
+                            class="btn btn-warning">Modifica</a>
+
+
+                        <!-- Button trigger modal -->
+                        <th:button sec:authorize="hasAuthority('ADMIN')"
+                            th:replace="fragments/delete-button :: button(${album.id})"></th:button>
+
+                        <!-- Modal -->
+                        <div th:replace="fragments/modal :: modal(${album.id}, ${album.nome}, 'album', 'albums')">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script th:replace="fragments/script :: script"></script>
+
+</body>
+
+</html>

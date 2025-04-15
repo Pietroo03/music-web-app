@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head('Elimina')"></th:block>
+</head>
+
+<body>
+
+    <button th:fragment="button(objectId)" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+        th:data-bs-target="'#delete-modal-' + ${objectId}">
+        Elimina
+    </button>
+
+
+    <script th:replace="fragments/script :: script"></script>
+
+</body>
+
+</html>

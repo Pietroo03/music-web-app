@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head"></th:block>
+</head>
+
+<body>
+    <header th:fragment="header(map, object, redirectPage, redirectName)" class="p-4 bg-light">
+        <nav class="navbar">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center">
+                    <h1>Albums & Artists</h1>
+
+                    <th:block th:if="${map == 'albums'}">
+                        <a class="btn btn-primary ms-2" th:href="@{/artists}">Lista Artisti</a>
+                        <a class="btn btn-primary ms-2" sec:authorize="hasAuthority('ADMIN')" th:href="@{/genres}">Lista
+                            Generi</a>
+                    </th:block>
+
+                    <th:block th:if="${map == 'artists'}">
+                        <a class="btn btn-primary ms-2" th:href="@{/albums}">Lista Album</a>
+                        <a class="btn btn-primary ms-2" sec:authorize="hasAuthority('ADMIN')" th:href="@{/genres}">Lista
+                            Generi</a>
+                    </th:block>
+
+                    <th:block th:if="${map == 'genres'}">
+                        <a class="btn btn-primary ms-2" th:href="@{/artists}">Lista Artisti</a>
+                        <a class="btn btn-primary ms-2" th:href="@{/albums}">Lista Album</a>
+                    </th:block>
+                </div>
+
+
+                <div class="d-flex gap-2">
+                    <!-- Barra di ricerca -->
+                    <form th:action="@{|/${map}|}" method="get" class="d-flex">
+                        <input type="text" name="search" class="form-control me-2" placeholder="Cerca ..."
+                            th:value="${search}">
+                        <button type="submit" class="btn btn-outline-primary">Cerca</button>
+                    </form>
+                    <!-- Pulsante Aggiungi -->
+                    <a class="btn btn-primary" sec:authorize="hasAuthority('ADMIN')" th:href="@{|/${map}/create|}">
+                        Aggiungi [[${object}]]
+                    </a>
+
+                    <!-- Pulsante Logout -->
+                    <a class="btn btn-secondary" th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+</body>
+
+
+</html>

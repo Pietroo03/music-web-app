@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head(${artista.alias})"></th:block>
+</head>
+
+<body th:object="${artista}">
+    <div class=" container my-5">
+
+
+        <div th:if="${artista != null} ">
+            <h1 class=" text-center mb-4" th:text="*{alias}">
+            </h1>
+            <div class="card shadow-lg border-0 h-100 mx-auto my-4" style="max-width: 800px;">
+                <img th:src="*{foto}" class="card-img-top" style="height: 350px; object-fit: cover;" alt="*{alias}">
+                <div class="card-body">
+                    <h2 class="card-title" th:text="*{alias}"></h2>
+                    <p class="card-text"><strong>Nome:</strong> <span th:text="*{nome + ' ' + cognome}"></span></p>
+                    <p class="card-text"><strong>Data di Nascita:</strong> <span
+                            th:text="*{formattedDataNascita}"></span></p>
+                    <p class="card-text"><strong>Etichetta</strong> <span th:text="*{etichetta}"></span></p>
+                    <p class="card-text"><strong>Descrizione:</strong> <span th:text=" *{descrizione}"></span></p>
+                    <p class=" card-text"><strong>Generi:</strong>
+                        <span th:each="genere : ${artista.generi}" th:text="|${genere.nome} |"></span>
+                    </p>
+                    <div class="d-flex justify-content-around">
+                        <a th:href="@{/artists}" class="btn btn-secondary">Torna agli Artisti</a>
+                        <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/artists/edit/{id} (id = ${artista.id})}"
+                            class="btn btn-warning">Modifica</a>
+
+
+                        <!-- Button trigger modal -->
+                        <th:button sec:authorize="hasAuthority('ADMIN')"
+                            th:replace="fragments/delete-button :: button(${artista.id})"></th:button>
+
+                        <!-- Modal -->
+                        <div
+                            th:replace="fragments/modal :: modal(${artista.id}, ${artista.nome}, 'artista', 'artists')">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h1 class="text-center my-5">Albums</h1>
+
+        <div class="row g-4 d-flex justify-content-center">
+            <div class="col-md-5 col-lg-2" th:if="${artista.albums.size() > 0}" th:each="album : ${artista.albums}">
+                <a th:href="@{/albums/{id}(id=${album.id})}" class="card shadow-lg border-0 h-100 text-decoration-none">
+                    <img th:src="${album.foto}" class="card-img-top" style="height: 350px; object-fit: cover;"
+                        alt="${album.nome}">
+                    <div class="card-footer bg-white text-center">
+                        <h4 class="card-title fw-bold" th:text="${album.nome}"></h4>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12" th:unless="${artista.albums.size() > 0}">
+                <div class="alert alert-warning text-center shadow-sm">
+                    <h4 class="mb-0">😞 Nessun album disponibile</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script th:replace="fragments/script :: script"></script>
+
+</body>
+
+</html>

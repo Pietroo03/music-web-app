@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: head('Homepage')"></th:block>
+</head>
+
+<body class="text-center">
+
+    <h1 class="mt-5">Benvenuto</h1>
+
+    <div class="mt-5 flex">
+        <a class="btn btn-primary fs-3" th:href="@{/albums}">Guarda gli Album</a>
+        <a class="btn btn-primary fs-3" th:href="@{/artists}">Guarda gli Artisti</a>
+    </div>
+
+</body>
+
+</html>
