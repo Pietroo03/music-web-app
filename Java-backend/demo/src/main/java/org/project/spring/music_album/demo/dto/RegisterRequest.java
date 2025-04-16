@@ -1,11 +1,9 @@
 package org.project.spring.music_album.demo.dto;
 
-import java.util.Set;
-
 public class RegisterRequest {
     private String username;
     private String password;
-    private Set<String> roles;
+    private String adminKey;
 
     public String getUsername() {
         return username;
@@ -23,11 +21,12 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getAdminKey() {
+        return adminKey;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setAdminKey(String adminKey) {
+        this.adminKey = adminKey;
     }
+
 }
