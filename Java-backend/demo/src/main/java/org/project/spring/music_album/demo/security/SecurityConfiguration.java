@@ -23,7 +23,10 @@ public class SecurityConfiguration {
     @SuppressWarnings("removal")
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
+        http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // CSRF disabilitato solo per le API
+                )
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, "/albums/**").hasAnyAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/albums/**").hasAnyAuthority("ADMIN")
