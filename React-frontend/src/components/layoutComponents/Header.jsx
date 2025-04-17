@@ -1,7 +1,21 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useContext } from "react";
+import { AuthContext } from '../../context/AuthContext';
 
 export default function Header() {
     const location = useLocation();
+    const navigate = useNavigate()
+    const { userRole, setUserRole } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        // Rimuovi il token dal localStorage
+        localStorage.removeItem("token");
+
+        setUserRole(null);
+
+        // Reindirizza l'utente alla pagina di login
+        navigate("/");
+    };
 
     return (
         <header className="flex justify-between items-center p-8 bg-gray-800 text-white sticky top-0 right-0 left-0 z-10">
@@ -17,18 +31,22 @@ export default function Header() {
                             Vedi Artisti
                         </Link>
 
-                        {/* <Link
-                            to="/genres"
-                            className="text-lg bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
-                        >
-                            Vedi Generi
-                        </Link>
-                        <Link
-                            to="/albums/create"
-                            className="text-lg bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300"
-                        >
-                            Crea Album
-                        </Link> */}
+                        {userRole === 'ADMIN' && (
+                            <>
+                                <Link
+                                    to="/genres"
+                                    className="text-lg bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 ml-4"
+                                >
+                                    Vedi Generi
+                                </Link>
+                                <Link
+                                    to="/albums/create"
+                                    className="text-lg bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300 ml-4"
+                                >
+                                    Crea Album
+                                </Link>
+                            </>
+                        )}
                     </>
                 )}
 
@@ -40,22 +58,26 @@ export default function Header() {
                         >
                             Vedi Albums
                         </Link>
-                        {/* <Link
-                            to="/genres"
-                            className="text-lg bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
-                        >
-                            Vedi Generi
-                        </Link>
-                        <Link
-                            to="/artists/create"
-                            className="text-lg bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300"
-                        >
-                            Crea Artista
-                        </Link> */}
+                        {userRole === 'ADMIN' && (
+                            <>
+                                <Link
+                                    to="/genres"
+                                    className="text-lg bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 ml-4"
+                                >
+                                    Vedi Generi
+                                </Link>
+                                <Link
+                                    to="/artists/create"
+                                    className="text-lg bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300 ml-4"
+                                >
+                                    Crea Artista
+                                </Link>
+                            </>
+                        )}
                     </>
                 )}
 
-                {/* {location.pathname === '/genres' && (
+                {location.pathname === '/genres' && userRole === 'ADMIN' && (
                     <>
                         <Link
                             to="/albums"
@@ -76,8 +98,17 @@ export default function Header() {
                             Crea Genere
                         </Link>
                     </>
+                )}
 
-                )} */}
+                {userRole && (
+                    <button
+                        onClick={handleLogout}
+                        className="text-lg bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-300 cursor-pointer ml-4"
+                    >
+                        Logout
+                    </button>
+                )}
+
             </div>
         </header>
     );
