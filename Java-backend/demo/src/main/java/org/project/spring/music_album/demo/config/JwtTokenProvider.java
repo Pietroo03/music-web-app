@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.crypto.spec.SecretKeySpec;
 
 @Component
@@ -32,8 +35,14 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime); // Impostiamo la scadenza del token
 
+        // Aggiungi i ruoli dell'utente al payload
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("roles", roles) // Aggiungi i ruoli come claim
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(secretKey) // Firma il token con la chiave

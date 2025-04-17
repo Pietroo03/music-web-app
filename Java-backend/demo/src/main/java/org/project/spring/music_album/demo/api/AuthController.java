@@ -1,6 +1,8 @@
 package org.project.spring.music_album.demo.api;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.project.spring.music_album.demo.config.JwtTokenProvider;
@@ -90,7 +92,11 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtTokenProvider.generateToken(userDetails);
 
-        return ResponseEntity.ok().body("Bearer " + token);
+        // Crea un oggetto di risposta che contiene il token
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+
+        return ResponseEntity.ok().body(response);
     }
 
 }
