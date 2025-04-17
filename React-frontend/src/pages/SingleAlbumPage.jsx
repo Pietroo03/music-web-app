@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 export default function SingleAlbumPage() {
     const base_api_url = import.meta.env.VITE_EXPRESS_API_SERVER;
@@ -7,6 +8,7 @@ export default function SingleAlbumPage() {
     const { id } = useParams();
     const [album, setAlbum] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         const fetchAlbum = async () => {
@@ -22,11 +24,25 @@ export default function SingleAlbumPage() {
         fetchAlbum();
     }, [id]);
 
-    /* const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    }; */
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                // Se hai incluso i ruoli come array
+                const role = decoded.roles ? decoded.roles[0] : null;
+                setUserRole(role);
+            } catch (error) {
+                console.error("Errore nel decodificare il token:", error);
+            }
+        }
+    }, []);
 
-    /* const handleDelete = async () => {
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
+
+    const handleDelete = async () => {
         try {
             const response = await fetch(`${albums_api_url}/${id}`, {
                 method: 'DELETE',
@@ -42,7 +58,7 @@ export default function SingleAlbumPage() {
             console.error('Errore nella richiesta di eliminazione:', error);
         }
         setIsModalOpen(false);
-    }; */
+    };
 
     if (!album) {
         return <div>Loading...</div>;
@@ -60,16 +76,20 @@ export default function SingleAlbumPage() {
                         Vedi {album.artista.alias}
                     </Link >
 
-                    {/* <Link to={`/albums/edit/${album.id}`} className="text-xl bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300" >
-                        Modifica Album
-                    </Link > */}
+                    {userRole === 'ADMIN' && (
+                        <>
+                            <Link to={`/albums/edit/${album.id}`} className="text-xl bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300" >
+                                Modifica Album
+                            </Link >
+                            <button
+                                onClick={toggleModal}
+                                className="text-xl bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300 ml-4 cursor-pointer"
+                            >
+                                Delete Album
+                            </button>
+                        </>
+                    )}
 
-                    {/* <button
-                        onClick={toggleModal}
-                        className="text-xl bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300 ml-4 cursor-pointer"
-                    >
-                        Delete Album
-                    </button> */}
                 </div>
 
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
@@ -90,7 +110,7 @@ export default function SingleAlbumPage() {
             </div>
 
             {/* Modale di conferma */}
-            {/* {isModalOpen && (
+            {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                         <h2 className="text-2xl mb-4">Sei sicuro di voler eliminare questo album?</h2>
@@ -110,7 +130,7 @@ export default function SingleAlbumPage() {
                         </div>
                     </div>
                 </div>
-            )} */}
+            )}
         </div>
     );
 }

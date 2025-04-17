@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { jwtDecode } from "jwt-decode";
 
 export default function SingleArtistPage() {
     const base_api_url = import.meta.env.VITE_EXPRESS_API_SERVER;
@@ -7,6 +8,7 @@ export default function SingleArtistPage() {
     const { id } = useParams();
     const [artista, setArtista] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         const fetchArtist = async () => {
@@ -22,11 +24,25 @@ export default function SingleArtistPage() {
         fetchArtist();
     }, [id]);
 
-    /*     const toggleModal = () => {
-            setIsModalOpen(!isModalOpen);
-        }; */
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                // Se hai incluso i ruoli come array
+                const role = decoded.roles ? decoded.roles[0] : null;
+                setUserRole(role);
+            } catch (error) {
+                console.error("Errore nel decodificare il token:", error);
+            }
+        }
+    }, []);
 
-    /* const handleDelete = async () => {
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
+
+    const handleDelete = async () => {
         try {
             const response = await fetch(`${artists_api_url}/${id}`, {
                 method: 'DELETE',
@@ -42,7 +58,7 @@ export default function SingleArtistPage() {
             console.error('Errore nella richiesta di eliminazione:', error);
         }
         setIsModalOpen(false);
-    }; */
+    };
 
     if (!artista) {
         return <div>Loading...</div>;
@@ -56,18 +72,22 @@ export default function SingleArtistPage() {
                         Torna agli Artisti
                     </Link>
 
-                    {/* <Link to={`/artists/edit/${artista.id}`} className="text-xl bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300" >
-                        Modifica Artista
-                    </Link > */}
+                    {userRole === 'ADMIN' && (
+                        <>
+                            <Link to={`/artists/edit/${artista.id}`} className="text-xl bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300" >
+                                Modifica Artista
+                            </Link >
 
-                    {/* <button
-                        onClick={toggleModal}
-                        className="text-xl bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300 ml-4 cursor-pointer"
-                    >
-                        Delete Artist
-                    </button> */}
+                            <button
+                                onClick={toggleModal}
+                                className="text-xl bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300 ml-4 cursor-pointer"
+                            >
+                                Delete Artist
+                            </button>
+
+                        </>
+                    )}
                 </div>
-
 
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
                     <h1 className="text-3xl font-bold text-center mb-6">{artista.alias}</h1>
@@ -105,7 +125,7 @@ export default function SingleArtistPage() {
             </div>
 
             {/* Modale di conferma */}
-            {/* {isModalOpen && (
+            {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                         <h2 className="text-2xl mb-4">Sei sicuro di voler eliminare questo artista?</h2>
@@ -125,7 +145,7 @@ export default function SingleArtistPage() {
                         </div>
                     </div>
                 </div>
-            )} */}
+            )}
         </div>
     );
 }
