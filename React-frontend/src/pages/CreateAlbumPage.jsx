@@ -202,6 +202,7 @@ export default function CreateAlbumPage() {
                         className="w-full p-2 border rounded-md"
                         required
                     >
+                        <option value="">-- seleziona --</option>
                         {Array.isArray(artisti) && artisti.map((artista) => (
                             <option key={artista.id} value={artista.id}>
                                 {artista.alias}

@@ -12,7 +12,7 @@ import EditAlbumPage from './pages/EditAlbumPage';
 import EditArtistPage from './pages/EditArtistPage';
 import GenresPage from './pages/GenresPage'
 import CreateGenrePage from './pages/CreateGenre';
-import LoginPage from './pages/LoginPage';
+import AuthenticationPage from './pages/AuthenticationPage';
 import ProtectedRoute from './components/security/ProtecteddRoute';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
 
-            <Route path='/' element={<LoginPage />}></Route>
+            <Route path='/' element={<AuthenticationPage />}></Route>
             <Route path='/home' element={<HomePage />}></Route>
             <Route path='/albums' element={<AlbumsPage />}></Route>
             <Route path='/artists' element={<ArtistsPage />}></Route>
