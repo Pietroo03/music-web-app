@@ -1,8 +1,10 @@
 package org.project.spring.music_album.demo.api;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.project.spring.music_album.demo.config.JwtTokenProvider;
@@ -17,9 +19,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +52,9 @@ public class AuthRestController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Value("${admin.key}")
     private String adminKey;
 
@@ -57,7 +65,6 @@ public class AuthRestController {
         }
 
         System.out.println("AdminKey ricevuta: " + registerRequest.getAdminKey());
-        System.out.println("AdminKey configurata: " + adminKey);
 
         // Crea un nuovo utente
         User user = new User();
@@ -81,22 +88,50 @@ public class AuthRestController {
         // Salva l'utente nel database
         userRepository.save(user);
 
-        return new ResponseEntity<>("Utente registrato con successo!", HttpStatus.CREATED);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        String token = jwtTokenProvider.generateToken(userDetails);
+
+        // Restituisci sia il messaggio di successo che il token
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Utente registrato con successo!");
+        response.put("token", token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        try {
+            // Tenta di autenticare con username e password
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtTokenProvider.generateToken(userDetails);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String token = jwtTokenProvider.generateToken(userDetails);
 
-        // Crea un oggetto di risposta che contiene il token
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
 
-        return ResponseEntity.ok().body(response);
+            return ResponseEntity.ok().body(response);
+
+        } catch (BadCredentialsException e) {
+            // Controlla se l'errore è dovuto a username o password errata
+            String username = loginRequest.getUsername();
+
+            // Verifica se l'username esiste
+            Optional<User> userOptional = userRepository.findByUsername(username);
+            if (userOptional.isEmpty()) {
+                // Se l'username non esiste, restituisci un errore per username
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("error", "Username non valido"));
+            } else {
+                // Se l'username esiste ma la password è errata, restituisci un errore per
+                // password
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("error", "Password errata"));
+            }
+        }
     }
 
 }
