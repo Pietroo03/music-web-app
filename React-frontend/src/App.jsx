@@ -11,7 +11,7 @@ import CreateArtistPage from './pages/CreateArtistPage';
 import EditAlbumPage from './pages/EditAlbumPage';
 import EditArtistPage from './pages/EditArtistPage';
 import GenresPage from './pages/GenresPage'
-import CreateGenrePage from './pages/CreateGenre';
+import CreateGenrePage from './pages/CreateGenrePage';
 import AuthenticationPage from './pages/AuthenticationPage';
 import ProtectedRoute from './components/security/ProtecteddRoute';
 
