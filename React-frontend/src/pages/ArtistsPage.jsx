@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import ArtistCard from "../components/albumsComponents/ArtistCard"
+import ArtistCard from "../components/artistsComponents/ArtistCard"
 
 export default function ArtistsPage() {
 
