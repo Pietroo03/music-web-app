@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import ArtistCard from "../components/artistsComponents/ArtistCard"
+import ArtistsCard from "../components/artistsComponents/ArtistsCard"
 
 export default function ArtistsPage() {
 
@@ -26,7 +26,7 @@ export default function ArtistsPage() {
 
     return (
 
-        <ArtistCard artists={artists} />
+        <ArtistsCard artists={artists} />
 
     );
 

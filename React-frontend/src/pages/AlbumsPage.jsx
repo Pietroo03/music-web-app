@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import AlbumCard from "../components/albumsComponents/AlbumCard"
+import AlbumsCard from "../components/albumsComponents/AlbumsCard"
 
 export default function AlbumsPage() {
 
@@ -26,7 +26,7 @@ export default function AlbumsPage() {
 
     return (
 
-        <AlbumCard albums={albums} />
+        <AlbumsCard albums={albums} />
 
     );
 
