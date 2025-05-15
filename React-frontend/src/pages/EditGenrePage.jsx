@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import EditGenreForm from "../components/genresComponents/EditGenreForm";
 
 export default function EditGenrePage() {
     const [formData, setFormData] = useState({ nome: "" });
@@ -79,23 +80,7 @@ export default function EditGenrePage() {
     }
 
     return (
-        <div className="container mt-4">
-            <h2>Modifica Genere</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="nome" className="form-label">Nome del genere</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="nome"
-                        name="nome"
-                        value={formData.nome}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <button type="submit" className="btn btn-primary">Salva modifiche</button>
-            </form>
-        </div>
-    );
+        <EditGenreForm handleSubmit={handleSubmit} handleChange={handleChange} formData={formData} />
+    )
+
 }

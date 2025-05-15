@@ -10,6 +10,7 @@ import CreateAlbumPage from './pages/CreateAlbumPage';
 import CreateArtistPage from './pages/CreateArtistPage';
 import EditAlbumPage from './pages/EditAlbumPage';
 import EditArtistPage from './pages/EditArtistPage';
+import EditGenrePage from './pages/EditGenrePage';
 import GenresPage from './pages/GenresPage'
 import CreateGenrePage from './pages/CreateGenrePage';
 import AuthenticationPage from './pages/AuthenticationPage';
@@ -52,6 +53,12 @@ function App() {
             <Route path='/genres/create' element={
               <ProtectedRoute requiredRole="ADMIN">
                 <CreateGenrePage />
+              </ProtectedRoute>
+            }
+            />
+            <Route path='/genres/edit/:id' element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <EditGenrePage />
               </ProtectedRoute>
             }
             />
