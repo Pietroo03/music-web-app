@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom"
 
-export default function SingleAlbumCard({ album, userRole, toggleModal, isModalOpen, handleDelete }) {
+export default function SingleAlbumCard({ album, userRole, toggleModal, isModalOpen, handleDelete, tracks, formatDuration }) {
 
     return (
-
         <div className="min-h-screen bg-gray-100 py-15 flex justify-center items-center">
             <div className="max-w-3xl w-full flex flex-col items-center">
                 <div className="flex justify-around text-center mb-8 ">
@@ -11,9 +10,10 @@ export default function SingleAlbumCard({ album, userRole, toggleModal, isModalO
                         Torna agli Albums
                     </Link>
 
-                    <Link to={`/artists/${album.artista.id}`} className="text-xl bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mr-4" >
-                        Vedi {album.artista.alias}
+                    <Link to={`/artists/${album.artista?.id}`} className="text-xl bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mr-4" >
+                        Vedi {album.artista?.alias || "Artista sconosciuto"}
                     </Link >
+
 
                     {userRole === 'ADMIN' && (
                         <>
@@ -28,7 +28,6 @@ export default function SingleAlbumCard({ album, userRole, toggleModal, isModalO
                             </button>
                         </>
                     )}
-
                 </div>
 
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full text-center">
@@ -43,8 +42,29 @@ export default function SingleAlbumCard({ album, userRole, toggleModal, isModalO
                         <p className="text-gray-600"><strong>Pubblicato il:</strong> {new Date(album.dataPubblicazione).toLocaleDateString()}</p>
                         <p className="text-gray-600"><strong>Tracce:</strong> {album.tracce}</p>
                         <p className="text-gray-600 mt-4"><strong>Descrizione:</strong> {album.descrizione}</p>
-                        <p className="text-gray-600 mt-4"><strong>Generi:</strong> {album.generi.map((genere) => genere.nome).join(', ')}</p>
+                        <p className="text-gray-600 mt-4"><strong>Generi:</strong>{' '}
+                            {Array.isArray(album.generi)
+                                ? album.generi.map((genere) => genere.nome).join(', ')
+                                : 'Nessun genere disponibile'}
+                        </p>
+
                     </div>
+
+                    {tracks.map((track, index) => (
+                        <li key={index} className="flex items-center space-x-4 text-2xl text-gray-600 mb-4">
+                            <span><strong>{track.title}</strong></span>
+                            <span>({formatDuration(track.duration)})</span>
+                            {track.preview && (
+                                <audio controls className="w-48">
+                                    <source src={track.preview} type="audio/mpeg" />
+                                    Il tuo browser non supporta l'elemento audio.
+                                </audio>
+                            )}
+                        </li>
+                    ))}
+
+
+
                 </div>
             </div>
 
@@ -71,6 +91,5 @@ export default function SingleAlbumCard({ album, userRole, toggleModal, isModalO
                 </div>
             )}
         </div>
-
-    )
+    );
 }
