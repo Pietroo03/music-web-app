@@ -35,6 +35,9 @@ public class Artista {
     @NotBlank(message = "Inserisci un URL valido")
     private String foto;
 
+    @NotBlank(message = "Inserisci un URL valido")
+    private String link;
+
     @NotBlank(message = "Il nome non può essere vuoto")
     @Size(min = 3, message = "Il nome deve essere lungo almeno 3 caratteri")
     private String nome;
@@ -154,4 +157,11 @@ public class Artista {
         this.generi = generi;
     }
 
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
 }

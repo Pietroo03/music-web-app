@@ -38,6 +38,9 @@ public class Album {
     @NotBlank(message = "Inserisci un URL valido")
     private String foto;
 
+    @NotBlank(message = "Inserisci un URL valido")
+    private String link;
+
     @NotNull(message = "La data di pubblicazione è obbligatoria")
     @Past(message = "Inserire una data di pubblicazione valida")
     @Column(name = "data_di_pubblicazione")
@@ -132,6 +135,14 @@ public class Album {
 
     public void setGeneri(List<Genere> generi) {
         this.generi = generi;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
 }
