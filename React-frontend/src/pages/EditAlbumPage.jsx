@@ -89,18 +89,27 @@ export default function EditAlbumPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Prepara il payload: trasformo artistaId in un oggetto artista con solo id
+        const albumToSend = {
+            ...album,
+            artista: { id: album.artistaId }
+        };
+
+        // Rimuovi artistaId se non serve, dipende dal backend
+        delete albumToSend.artistaId;
+
         try {
             const response = await fetch(`${albums_api_url}/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(album),
+                body: JSON.stringify(albumToSend),
             });
 
             if (response.ok) {
                 console.log('Album modificato');
-                navigate(`/albums/${id}`); // Redirige alla pagina dell'album dopo la modifica
+                navigate(`/albums/${id}`);
             } else {
                 console.error('Errore nella modifica dell\'album');
             }
@@ -108,6 +117,7 @@ export default function EditAlbumPage() {
             console.error('Errore nella richiesta di modifica:', error);
         }
     };
+
 
     if (!album || !generi.length) {
         return <div>Loading...</div>;
