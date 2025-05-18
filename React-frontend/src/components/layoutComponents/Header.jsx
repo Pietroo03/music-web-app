@@ -20,23 +20,23 @@ export default function Header() {
     return (
         <header className="flex justify-between items-center p-8 bg-gray-800 text-white sticky top-0 right-0 left-0 z-10">
 
-            {location.pathname.startsWith('/albums') && (
+            {location.pathname.startsWith('/albums') ? (
                 <Link to="/albums">
                     <h1 className="text-3xl font-bold">Albums & Artists Collection</h1>
                 </Link>
-            )}
-
-            {location.pathname.startsWith('/artists') && (
+            ) : location.pathname.startsWith('/artists') ? (
                 <Link to="/artists">
                     <h1 className="text-3xl font-bold">Albums & Artists Collection</h1>
                 </Link>
-            )}
-
-            {location.pathname.startsWith('/genres') && (
+            ) : location.pathname.startsWith('/genres') ? (
                 <Link to="/genres">
                     <h1 className="text-3xl font-bold">Albums & Artists Collection</h1>
                 </Link>
+            ) : (
+                <h1 className="text-3xl font-bold">Albums & Artists Collection</h1>
             )}
+
+
 
             <div className="flex gap-4">
 
