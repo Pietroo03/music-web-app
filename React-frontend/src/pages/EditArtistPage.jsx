@@ -17,6 +17,7 @@ export default function EditArtistPage() {
             try {
                 const response = await fetch(`${artists_api_url}/${id}`);
                 const data = await response.json();
+                console.log("Artista caricato:", data);
                 setArtist(data);
             } catch (error) {
                 console.error('Errore nel recuperare l\'artista:', error);
