@@ -58,6 +58,7 @@ public class ArtistaService {
             artistaDaAggiornare.setAlias(artista.getAlias());
             artistaDaAggiornare.setFoto(artista.getFoto());
             artistaDaAggiornare.setNome(artista.getNome());
+            artistaDaAggiornare.setLink(artista.getLink());
             artistaDaAggiornare.setCognome(artista.getCognome());
             artistaDaAggiornare.setDataNascita(artista.getDataNascita());
             artistaDaAggiornare.setEtichetta(artista.getEtichetta());

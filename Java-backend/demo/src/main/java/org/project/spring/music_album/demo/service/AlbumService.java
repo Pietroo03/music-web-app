@@ -39,8 +39,31 @@ public class AlbumService {
         return albumRepository.save(Album);
     }
 
-    public Album update(Album Album) {
-        return albumRepository.save(Album);
+    public Album update(Album album) {
+        Optional<Album> albumEsistente = albumRepository.findById(album.getId());
+
+        if (albumEsistente.isPresent()) {
+            Album albumDaAggiornare = albumEsistente.get();
+
+            albumDaAggiornare.setNome(album.getNome());
+            albumDaAggiornare.setFoto(album.getFoto());
+            albumDaAggiornare.setLink(album.getLink());
+            albumDaAggiornare.setDataPubblicazione(album.getDataPubblicazione());
+            albumDaAggiornare.setTracce(album.getTracce());
+            albumDaAggiornare.setDescrizione(album.getDescrizione());
+
+            if (album.getArtista() != null) {
+                albumDaAggiornare.setArtista(album.getArtista());
+            }
+
+            if (album.getGeneri() != null) {
+                albumDaAggiornare.setGeneri(album.getGeneri());
+            }
+
+            return albumRepository.save(albumDaAggiornare);
+        } else {
+            throw new RuntimeException("Album non trovato con ID: " + album.getId());
+        }
     }
 
     public void delete(Album Album) {
