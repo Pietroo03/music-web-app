@@ -51,8 +51,6 @@ public class Artista {
     @Column(name = "data_di_nascita")
     private LocalDate dataNascita;
 
-    private String formattedDataNascita;
-
     @NotBlank(message = "L''etichetta non può essere vuota")
     @Size(min = 3, message = "L''etichetta deve essere lunga almeno 3 caratteri")
     private String etichetta;
@@ -115,14 +113,6 @@ public class Artista {
 
     public void setDataNascita(LocalDate dataNascita) {
         this.dataNascita = dataNascita;
-    }
-
-    public String getFormattedDataNascita() {
-        return formattedDataNascita;
-    }
-
-    public void setFormattedDataNascita(String formattedDataNascita) {
-        this.formattedDataNascita = formattedDataNascita;
     }
 
     public String getEtichetta() {

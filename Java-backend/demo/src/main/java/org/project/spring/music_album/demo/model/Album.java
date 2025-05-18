@@ -46,8 +46,6 @@ public class Album {
     @Column(name = "data_di_pubblicazione")
     private LocalDate dataPubblicazione;
 
-    private String formattedDataPubblicazione;
-
     @NotBlank(message = "La descrizione non può essere vuota")
     @Column(columnDefinition = "TEXT")
     private String descrizione;
@@ -95,14 +93,6 @@ public class Album {
 
     public void setDataPubblicazione(LocalDate dataPubblicazione) {
         this.dataPubblicazione = dataPubblicazione;
-    }
-
-    public String getFormattedDataPubblicazione() {
-        return formattedDataPubblicazione;
-    }
-
-    public void setFormattedDataPubblicazione(String formattedDataPubblicazione) {
-        this.formattedDataPubblicazione = formattedDataPubblicazione;
     }
 
     public String getDescrizione() {
