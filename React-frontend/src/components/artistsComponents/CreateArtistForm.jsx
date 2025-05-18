@@ -58,6 +58,19 @@ export default function CreateArtistForm({ handleSubmit, formData, handleChange,
                 </div>
 
                 <div className="mb-4">
+                    <label htmlFor="link" className="block text-2xl font-medium mb-2">Link Spotify</label>
+                    <input
+                        type="text"
+                        id="link"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded-md"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
                     <label htmlFor="dataNascita" className="block text-2xl font-medium mb-2">Data di Nascita</label>
                     <input
                         type="date"

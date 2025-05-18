@@ -43,6 +43,18 @@ export default function EditArtistForm({ handleSubmit, artist, handleChange, gen
                     </div>
 
                     <div className="mb-4">
+                        <label className="block text-gray-600 text-2xl" htmlFor="link">Link Spotify</label>
+                        <input
+                            type="text"
+                            id="link"
+                            name="link"
+                            value={artist.link}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md mt-2"
+                        />
+                    </div>
+
+                    <div className="mb-4">
                         <label className="block text-gray-600 text-2xl" htmlFor="dataNascita">Data di Nascita</label>
                         <input
                             type="date"

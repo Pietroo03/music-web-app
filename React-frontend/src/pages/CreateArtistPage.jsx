@@ -8,6 +8,7 @@ export default function CreateArtistPage() {
         foto: "",
         nome: "",
         cognome: "",
+        link: "",
         dataNascita: "",
         etichetta: "",
         descrizione: "",

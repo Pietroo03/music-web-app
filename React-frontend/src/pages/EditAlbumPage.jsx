@@ -9,7 +9,9 @@ export default function EditAlbumPage() {
     const base_api_url = import.meta.env.VITE_EXPRESS_API_SERVER;
     const albums_api_url = `${base_api_url}/albums`;
     const genres_api_url = `${base_api_url}/genres`;
+    const artists_api_url = `${base_api_url}/artists`;
     const [album, setAlbum] = useState(null);
+    const [artists, setArtists] = useState(null);
     const [generi, setGeneri] = useState([]);
 
     useEffect(() => {
@@ -17,11 +19,28 @@ export default function EditAlbumPage() {
             try {
                 const response = await fetch(`${albums_api_url}/${id}`);
                 const data = await response.json();
-                setAlbum(data);
+                console.log("Album caricato:", data);
+                const albumData = {
+                    ...data.album,
+                    artistaId: data.album.artista?.id || ""
+                };
+                setAlbum(albumData);  // 👈 Prendi direttamente l'oggetto album
             } catch (error) {
-                console.error('Errore nel recuperare l\'album:', error);
+                console.error("Errore nel recuperare l'album:", error);
             }
         };
+
+        const fetchArtists = async () => {
+            try {
+                const response = await fetch(artists_api_url);
+                const data = await response.json();
+                console.log("Artisti caricati:", data);  // per debug
+                setArtists(data);  // usa direttamente i dati
+            } catch (error) {
+                console.error('Errore nel recuperare gli artisti:', error);
+            }
+        };
+
 
         const fetchGeneri = async () => {
             try {
@@ -34,6 +53,7 @@ export default function EditAlbumPage() {
         };
 
         fetchAlbum();
+        fetchArtists();
         fetchGeneri();
     }, [id]);
 
@@ -95,7 +115,7 @@ export default function EditAlbumPage() {
 
     return (
 
-        <EditAlbumForm handleSubmit={handleSubmit} album={album} handleChange={handleChange} generi={generi} handleGenreChange={handleGenreChange} />
+        <EditAlbumForm handleSubmit={handleSubmit} album={album} handleChange={handleChange} generi={generi} handleGenreChange={handleGenreChange} artisti={artists} />
 
     );
 }

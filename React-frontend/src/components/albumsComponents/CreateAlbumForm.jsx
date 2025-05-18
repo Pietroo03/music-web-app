@@ -32,6 +32,19 @@ export default function CreateAlbumForm({ formData, handleChange, artisti, gener
                 </div>
 
                 <div className="mb-4">
+                    <label htmlFor="link" className="block text-2xl font-medium mb-2">Link Spotify</label>
+                    <input
+                        type="text"
+                        id="link"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded-md"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
                     <label htmlFor="dataPubblicazione" className="block text-2xl font-medium mb-2">Data di pubblicazione</label>
                     <input
                         type="date"
