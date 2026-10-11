@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.project.spring.music_album.demo.model.Artista;
 import org.project.spring.music_album.demo.service.ArtistaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +24,11 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:5173")
 public class ArtistaRestController {
 
-    @Autowired
-    private ArtistaService artistaService;
+    private final ArtistaService artistaService;
+
+    public ArtistaRestController(ArtistaService artistaService) {
+        this.artistaService = artistaService;
+    }
 
     @GetMapping
     public List<Artista> index() {

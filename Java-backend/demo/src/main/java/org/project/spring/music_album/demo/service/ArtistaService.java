@@ -9,21 +9,24 @@ import org.project.spring.music_album.demo.model.Genere;
 import org.project.spring.music_album.demo.repository.AlbumRepository;
 import org.project.spring.music_album.demo.repository.ArtistaRepository;
 import org.project.spring.music_album.demo.repository.GenereRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ArtistaService {
 
-    @Autowired
-    private ArtistaRepository artistaRepository;
+    private final ArtistaRepository artistaRepository;
+    private final AlbumRepository albumRepository;
+    private final GenereRepository genereRepository;
 
-    @Autowired
-    private AlbumRepository albumRepository;
-
-    @Autowired
-    private GenereRepository genereRepository;
+    public ArtistaService(
+            ArtistaRepository artistaRepository,
+            AlbumRepository albumRepository,
+            GenereRepository genereRepository) {
+        this.artistaRepository = artistaRepository;
+        this.albumRepository = albumRepository;
+        this.genereRepository = genereRepository;
+    }
 
     public List<Artista> findAll() {
         return artistaRepository.findAll();

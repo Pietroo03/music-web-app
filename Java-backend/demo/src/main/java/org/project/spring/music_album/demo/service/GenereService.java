@@ -5,15 +5,17 @@ import java.util.Optional;
 
 import org.project.spring.music_album.demo.model.Genere;
 import org.project.spring.music_album.demo.repository.GenereRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GenereService {
 
-    @Autowired
-    private GenereRepository genereRepository;
+    private final GenereRepository genereRepository;
+
+    public GenereService(GenereRepository genereRepository) {
+        this.genereRepository = genereRepository;
+    }
 
     public List<Genere> findAll() {
         return genereRepository.findAll();

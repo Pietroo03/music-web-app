@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.project.spring.music_album.demo.model.Genere;
 import org.project.spring.music_album.demo.service.GenereService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +24,11 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:5173")
 public class GenereRestController {
 
-    @Autowired
-    private GenereService genereService;
+    private final GenereService genereService;
+
+    public GenereRestController(GenereService genereService) {
+        this.genereService = genereService;
+    }
 
     @GetMapping
     public List<Genere> index() {

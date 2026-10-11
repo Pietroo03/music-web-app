@@ -5,15 +5,17 @@ import java.util.Optional;
 
 import org.project.spring.music_album.demo.model.Album;
 import org.project.spring.music_album.demo.repository.AlbumRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AlbumService {
 
-    @Autowired
-    private AlbumRepository albumRepository;
+    private final AlbumRepository albumRepository;
+
+    public AlbumService(AlbumRepository albumRepository) {
+        this.albumRepository = albumRepository;
+    }
 
     public List<Album> findAll() {
         return albumRepository.findAllByOrderByArtista_IdAscDataPubblicazioneAsc();

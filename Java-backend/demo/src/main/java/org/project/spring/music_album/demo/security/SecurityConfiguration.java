@@ -44,18 +44,14 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authenticationProvider(DatabaseUserDetailsService userDetailsService,
+            BCryptPasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(userDetailsService());
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
 
         return authenticationProvider;
-    }
-
-    @Bean
-    DatabaseUserDetailsService userDetailsService() {
-        return new DatabaseUserDetailsService();
     }
 
     @Bean

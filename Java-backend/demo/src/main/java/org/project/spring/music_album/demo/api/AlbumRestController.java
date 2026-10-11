@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.project.spring.music_album.demo.dto.AlbumDetails;
 import org.project.spring.music_album.demo.model.Album;
 import org.project.spring.music_album.demo.service.AlbumService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +32,11 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AlbumRestController {
 
-    @Autowired
-    private AlbumService albumService;
+    private final AlbumService albumService;
+
+    public AlbumRestController(AlbumService albumService) {
+        this.albumService = albumService;
+    }
 
     @GetMapping
     public List<Album> index() {
