@@ -23,7 +23,7 @@ export default function SingleArtistPage() {
         };
 
         fetchArtist();
-    }, [id]);
+    }, [id, artists_api_url]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");

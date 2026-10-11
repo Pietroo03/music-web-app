@@ -55,7 +55,7 @@ export default function EditAlbumPage() {
         fetchAlbum();
         fetchArtists();
         fetchGeneri();
-    }, [id]);
+    }, [id, albums_api_url, artists_api_url, genres_api_url]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

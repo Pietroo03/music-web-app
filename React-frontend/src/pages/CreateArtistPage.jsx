@@ -36,7 +36,7 @@ export default function CreateArtistPage() {
         };
 
         fetchGeneri();
-    }, []);
+    }, [genresUrl]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

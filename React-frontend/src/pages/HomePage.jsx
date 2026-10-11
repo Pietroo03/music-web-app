@@ -1,25 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode"; // Usa questa se il modulo espone 'jwtDecode' come una funzione nominata
 
 
 export default function HomePage() {
     const navigate = useNavigate();
 
-    // Recupero il token dal localStorage
-    const token = localStorage.getItem("token");
-    const [role, setRole] = useState(null);
-
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (token) {
             try {
-                const decodedToken = jwtDecode(token); // Decodifica il token
-                console.log(decodedToken);
-
-                // Salvo il ruolo se presente nel token
-                setRole(decodedToken.role);
+                jwtDecode(token); // Verifica che il token sia valido
             } catch (error) {
                 console.error("Errore nel decodificare il token:", error);
             }

@@ -21,7 +21,7 @@ export default function AlbumsPage() {
                 setAlbums(data);
 
             }).catch(err => console.log(err))
-    }, [])
+    }, [albums_api_url])
 
 
     return (

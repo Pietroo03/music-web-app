@@ -9,19 +9,19 @@ export default function GenresPage() {
     const [selectedGenre, setSelectedGenre] = useState(null);
 
     useEffect(() => {
-        fetchGenres();
-    }, []);
+        const fetchGenres = async () => {
+            try {
+                const res = await fetch(genres_api_url);
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                const data = await res.json();
+                setGenres(data);
+            } catch (err) {
+                console.error("Errore nel recuperare i generi:", err);
+            }
+        };
 
-    const fetchGenres = async () => {
-        try {
-            const res = await fetch(genres_api_url);
-            if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-            const data = await res.json();
-            setGenres(data);
-        } catch (err) {
-            console.error("Errore nel recuperare i generi:", err);
-        }
-    };
+        fetchGenres();
+    }, [genres_api_url]);
 
     const toggleModal = (genre) => {
         setSelectedGenre(genre);

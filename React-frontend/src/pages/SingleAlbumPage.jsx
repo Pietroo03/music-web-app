@@ -24,7 +24,7 @@ export default function SingleAlbumPage() {
         };
 
         fetchAlbum();
-    }, [id]);
+    }, [id, albums_api_url]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");

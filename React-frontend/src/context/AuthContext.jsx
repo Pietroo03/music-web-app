@@ -1,26 +1,28 @@
 // AuthContext.jsx
-import { createContext, useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
-
-export const AuthContext = createContext();
+import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }) => {
     const [userRole, setUserRole] = useState(null);
 
-    const loadUserRole = () => {
+    const loadUserRole = useCallback(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            const decoded = jwtDecode(token);
-            const role = decoded.roles ? decoded.roles[0] : null;
-            setUserRole(role);
+            try {
+                const decoded = jwtDecode(token);
+                setUserRole(decoded.roles?.[0] ?? null);
+            } catch {
+                setUserRole(null);
+            }
         } else {
             setUserRole(null);
         }
-    };
+    }, []);
 
     useEffect(() => {
         loadUserRole();
-    }, []);
+    }, [loadUserRole]);
 
     return (
         <AuthContext.Provider value={{ userRole, loadUserRole, setUserRole }}>

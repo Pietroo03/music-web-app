@@ -46,7 +46,7 @@ export default function CreateAlbumPage() {
 
         fetchGeneri();
         fetchArtisti();
-    }, []);
+    }, [artistsUrl, genresUrl]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

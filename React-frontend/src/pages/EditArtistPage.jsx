@@ -36,7 +36,7 @@ export default function EditArtistPage() {
 
         fetchArtist();
         fetchGeneri();
-    }, [id]);
+    }, [id, artists_api_url, genres_api_url]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

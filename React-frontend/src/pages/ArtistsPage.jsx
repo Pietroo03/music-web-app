@@ -21,7 +21,7 @@ export default function ArtistsPage() {
                 setArtists(data);
 
             }).catch(err => console.log(err))
-    }, [])
+    }, [albums_api_url])
 
 
     return (

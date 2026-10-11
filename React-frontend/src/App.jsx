@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './layout/AppLayout'
 import HomePage from './pages/HomePage'
 import AlbumsPage from './pages/AlbumsPage'
@@ -83,5 +83,4 @@ function App() {
 }
 
 export default App
-
 
