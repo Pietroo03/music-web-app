@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import GenresCard from "../components/genresComponents/GenresCard";
 
@@ -11,7 +12,7 @@ export default function GenresPage() {
     useEffect(() => {
         const fetchGenres = async () => {
             try {
-                const res = await fetch(genres_api_url);
+                const res = await apiFetch(genres_api_url);
                 if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
                 const data = await res.json();
                 setGenres(data);
@@ -32,7 +33,7 @@ export default function GenresPage() {
         if (!selectedGenre) return;
 
         try {
-            const res = await fetch(`${genres_api_url}/${selectedGenre.id}`, {
+            const res = await apiFetch(`${genres_api_url}/${selectedGenre.id}`, {
                 method: "DELETE",
             });
 

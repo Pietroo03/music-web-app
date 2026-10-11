@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditAlbumForm from '../components/albumsComponents/EditAlbumForm';
@@ -17,7 +18,7 @@ export default function EditAlbumPage() {
     useEffect(() => {
         const fetchAlbum = async () => {
             try {
-                const response = await fetch(`${albums_api_url}/${id}`);
+                const response = await apiFetch(`${albums_api_url}/${id}`);
                 const data = await response.json();
                 console.log("Album caricato:", data);
                 const albumData = {
@@ -32,7 +33,7 @@ export default function EditAlbumPage() {
 
         const fetchArtists = async () => {
             try {
-                const response = await fetch(artists_api_url);
+                const response = await apiFetch(artists_api_url);
                 const data = await response.json();
                 console.log("Artisti caricati:", data);  // per debug
                 setArtists(data);  // usa direttamente i dati
@@ -44,7 +45,7 @@ export default function EditAlbumPage() {
 
         const fetchGeneri = async () => {
             try {
-                const response = await fetch(genres_api_url);
+                const response = await apiFetch(genres_api_url);
                 const data = await response.json();
                 setGeneri(data);
             } catch (error) {
@@ -99,7 +100,7 @@ export default function EditAlbumPage() {
         delete albumToSend.artistaId;
 
         try {
-            const response = await fetch(`${albums_api_url}/${id}`, {
+            const response = await apiFetch(`${albums_api_url}/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

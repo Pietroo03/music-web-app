@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { jwtDecode } from "jwt-decode";
@@ -14,7 +15,7 @@ export default function SingleArtistPage() {
     useEffect(() => {
         const fetchArtist = async () => {
             try {
-                const response = await fetch(`${artists_api_url}/${id}`);
+                const response = await apiFetch(`${artists_api_url}/${id}`);
                 const data = await response.json();
                 setArtista(data);
             } catch (error) {
@@ -45,7 +46,7 @@ export default function SingleArtistPage() {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`${artists_api_url}/${id}`, {
+            const response = await apiFetch(`${artists_api_url}/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {

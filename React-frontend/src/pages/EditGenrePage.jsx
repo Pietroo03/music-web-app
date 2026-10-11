@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EditGenreForm from "../components/genresComponents/EditGenreForm";
@@ -13,7 +14,7 @@ export default function EditGenrePage() {
 
     // Carica i dati del genere al montaggio
     useEffect(() => {
-        fetch(genreUrl)
+        apiFetch(genreUrl)
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Errore nel caricamento del genere");
@@ -55,7 +56,7 @@ export default function EditGenrePage() {
         }
 
         try {
-            const response = await fetch(genreUrl, {
+            const response = await apiFetch(genreUrl, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

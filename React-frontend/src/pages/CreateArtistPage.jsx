@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateArtistForm from "../components/artistsComponents/CreateArtistForm";
@@ -25,7 +26,7 @@ export default function CreateArtistPage() {
     useEffect(() => {
         const fetchGeneri = async () => {
             try {
-                const response = await fetch(genresUrl);
+                const response = await apiFetch(genresUrl);
                 const data = await response.json();
                 setGeneri(data);
                 setLoading(false);
@@ -94,7 +95,7 @@ export default function CreateArtistPage() {
         };
 
         try {
-            const response = await fetch(`${base_api_url}/artists`, {
+            const response = await apiFetch(`${base_api_url}/artists`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

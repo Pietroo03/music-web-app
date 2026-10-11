@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react"
 import AlbumsCard from "../components/albumsComponents/AlbumsCard"
 
@@ -9,7 +10,7 @@ export default function AlbumsPage() {
 
     useEffect(() => {
 
-        fetch(albums_api_url)
+        apiFetch(albums_api_url)
             .then(res => {
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);

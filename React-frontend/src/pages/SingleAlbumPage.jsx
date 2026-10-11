@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { jwtDecode } from "jwt-decode";
@@ -15,7 +16,7 @@ export default function SingleAlbumPage() {
     useEffect(() => {
         const fetchAlbum = async () => {
             try {
-                const response = await fetch(`${albums_api_url}/${id}`);
+                const response = await apiFetch(`${albums_api_url}/${id}`);
                 const data = await response.json();
                 setAlbum(data.album);
             } catch (error) {
@@ -46,7 +47,7 @@ export default function SingleAlbumPage() {
         async function fetchTracks() {
             try {
                 // Supponiamo che il backend esponga l'endpoint /api/albums/{id} che restituisce Album + tracce Deezer
-                const response = await fetch(`http://localhost:8080/api/albums/${id}`);
+                const response = await apiFetch(`http://localhost:8080/api/albums/${id}`);
                 if (!response.ok) {
                     throw new Error("Errore nel recupero dati album + tracce");
                 }
@@ -68,7 +69,7 @@ export default function SingleAlbumPage() {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`${albums_api_url}/${id}`, {
+            const response = await apiFetch(`${albums_api_url}/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {

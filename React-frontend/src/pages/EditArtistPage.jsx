@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditArtistForm from '../components/artistsComponents/EditArtistForm';
@@ -15,7 +16,7 @@ export default function EditArtistPage() {
     useEffect(() => {
         const fetchArtist = async () => {
             try {
-                const response = await fetch(`${artists_api_url}/${id}`);
+                const response = await apiFetch(`${artists_api_url}/${id}`);
                 const data = await response.json();
                 console.log("Artista caricato:", data);
                 setArtist(data);
@@ -26,7 +27,7 @@ export default function EditArtistPage() {
 
         const fetchGeneri = async () => {
             try {
-                const response = await fetch(genres_api_url);
+                const response = await apiFetch(genres_api_url);
                 const data = await response.json();
                 setGeneri(data);
             } catch (error) {
@@ -73,7 +74,7 @@ export default function EditArtistPage() {
         delete updatedArtist.albums; // Rimuove albums prima di inviare la richiesta
 
         try {
-            const response = await fetch(`${artists_api_url}/${id}`, {
+            const response = await apiFetch(`${artists_api_url}/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

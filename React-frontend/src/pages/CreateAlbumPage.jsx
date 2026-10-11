@@ -1,3 +1,4 @@
+import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateAlbumForm from "../components/albumsComponents/CreateAlbumForm";
@@ -24,7 +25,7 @@ export default function CreateAlbumPage() {
     useEffect(() => {
         const fetchGeneri = async () => {
             try {
-                const response = await fetch(genresUrl);
+                const response = await apiFetch(genresUrl);
                 const data = await response.json();
                 setGeneri(data);
             } catch (error) {
@@ -34,7 +35,7 @@ export default function CreateAlbumPage() {
 
         const fetchArtisti = async () => {
             try {
-                const response = await fetch(artistsUrl);
+                const response = await apiFetch(artistsUrl);
                 const data = await response.json();
                 setArtisti(data);
                 setLoading(false);
@@ -104,7 +105,7 @@ export default function CreateAlbumPage() {
         };
 
         try {
-            const response = await fetch(`${base_api_url}/albums`, {
+            const response = await apiFetch(`${base_api_url}/albums`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
