@@ -1,9 +1,11 @@
 package org.project.spring.music_album.demo.model;
 
 import java.util.Set;
+import java.time.Instant;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
@@ -32,13 +36,19 @@ public class User {
     private String password;
 
     @Email
-    @Column(unique = true, length = 254)
+    @Column(nullable = false, unique = true, length = 254)
     private String email;
 
-    // Null keeps accounts created before email verification enabled and able to log in.
+    @Column(nullable = false)
     private Boolean emailVerified;
 
     private Integer tokenVersion;
+
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserProfileImage profileImage;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -90,6 +100,25 @@ public class User {
 
     public void setTokenVersion(Integer tokenVersion) {
         this.tokenVersion = tokenVersion;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public UserProfileImage getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(UserProfileImage profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    @PrePersist
+    void initializeCreatedAt() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public Set<Role> getRoles() {

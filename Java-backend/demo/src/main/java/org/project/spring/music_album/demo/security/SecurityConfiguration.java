@@ -40,9 +40,15 @@ public class SecurityConfiguration {
                                 "/api/auth/verify-email",
                                 "/api/auth/resend-verification",
                                 "/api/auth/forgot-password",
-                                "/api/auth/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/email-verification").authenticated()
+                                "/api/auth/reset-password",
+                                "/api/auth/account-deletion-confirm").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/account-deletion-request",
+                                "/api/auth/profile/photo").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/profile").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/auth/profile/username",
+                                "/api/auth/profile/password").authenticated()
                         .requestMatchers("/api/auth/**").denyAll()
+                        .requestMatchers(HttpMethod.GET, "/api/albums/covers").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/albums/**", "/api/artists/**", "/api/genres/**")
                         .hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/albums/**", "/api/artists/**", "/api/genres/**")

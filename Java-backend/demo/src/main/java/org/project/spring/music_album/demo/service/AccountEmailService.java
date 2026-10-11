@@ -28,6 +28,7 @@ public class AccountEmailService {
 
     private static final long EMAIL_TOKEN_MINUTES = 24 * 60;
     private static final long RESET_TOKEN_MINUTES = 30;
+    private static final long DELETE_TOKEN_MINUTES = 15;
 
     private final AccountActionTokenRepository tokenRepository;
     private final UserRepository userRepository;
@@ -55,17 +56,6 @@ public class AccountEmailService {
     @Transactional
     public void sendRegistrationVerification(User user) {
         issueEmailVerification(user, normalizeEmail(user.getEmail()));
-    }
-
-    @Transactional
-    public void requestEmailVerification(String username, String requestedEmail) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Account non trovato"));
-        if (Boolean.TRUE.equals(user.getEmailVerified())) {
-            throw new IllegalStateException("L'indirizzo email è già verificato");
-        }
-
-        issueEmailVerification(user, normalizeEmail(requestedEmail));
     }
 
     private void issueEmailVerification(User user, String targetEmail) {
@@ -112,6 +102,29 @@ public class AccountEmailService {
         tokenRepository.deleteByUser_IdAndType(user.getId(), AccountTokenType.PASSWORD_RESET);
     }
 
+    @Transactional
+    public void requestAccountDeletion(String username, String currentPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Account non trovato"));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("La password attuale non è corretta");
+        }
+        if (!Boolean.TRUE.equals(user.getEmailVerified()) || user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalStateException("Verifica prima un indirizzo email per poter eliminare l'account");
+        }
+
+        issueToken(user, user.getEmail(), AccountTokenType.ACCOUNT_DELETION,
+                DELETE_TOKEN_MINUTES, "/delete-account?token=");
+    }
+
+    @Transactional
+    public void confirmAccountDeletion(String rawToken) {
+        AccountActionToken token = findValidToken(rawToken, AccountTokenType.ACCOUNT_DELETION);
+        User user = token.getUser();
+        tokenRepository.deleteByUser_Id(user.getId());
+        userRepository.delete(user);
+    }
+
     private void issueToken(User user, String targetEmail, AccountTokenType type, long lifetimeMinutes,
             String pathAndQuery) {
         Instant now = Instant.now();
@@ -137,13 +150,20 @@ public class AccountEmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailFrom);
         message.setTo(targetEmail);
-        message.setSubject(type == AccountTokenType.EMAIL_VERIFICATION
-                ? "Verifica il tuo indirizzo email"
-                : "Reimposta la password");
-        message.setText(type == AccountTokenType.EMAIL_VERIFICATION
-                ? "Per verificare il tuo indirizzo email, apri questo link (valido 24 ore):\n\n" + link
-                : "Per reimpostare la password, apri questo link (valido 30 minuti):\n\n" + link
-                        + "\n\nSe non hai richiesto il reset, ignora questa email.");
+        message.setSubject(switch (type) {
+            case EMAIL_VERIFICATION -> "Verifica il tuo indirizzo email";
+            case PASSWORD_RESET -> "Reimposta la password";
+            case ACCOUNT_DELETION -> "Conferma l'eliminazione del tuo account";
+        });
+        message.setText(switch (type) {
+            case EMAIL_VERIFICATION -> "Per verificare il tuo indirizzo email, apri questo link (valido 24 ore):\n\n"
+                    + link;
+            case PASSWORD_RESET -> "Per reimpostare la password, apri questo link (valido 30 minuti):\n\n" + link
+                    + "\n\nSe non hai richiesto il reset, ignora questa email.";
+            case ACCOUNT_DELETION -> "Per eliminare definitivamente il tuo account, apri il link e conferma "
+                    + "l'operazione (valido 15 minuti):\n\n" + link
+                    + "\n\nSe non hai richiesto l'eliminazione, ignora questa email.";
+        });
         mailSender.send(message);
     }
 

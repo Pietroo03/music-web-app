@@ -9,17 +9,24 @@ import java.util.Set;
 
 import org.project.spring.music_album.demo.config.JwtTokenProvider;
 import org.project.spring.music_album.demo.dto.EmailRequest;
+import org.project.spring.music_album.demo.dto.ChangePasswordRequest;
+import org.project.spring.music_album.demo.dto.DeleteAccountRequest;
 import org.project.spring.music_album.demo.dto.LoginRequest;
 import org.project.spring.music_album.demo.dto.PasswordResetRequest;
 import org.project.spring.music_album.demo.dto.RegisterRequest;
 import org.project.spring.music_album.demo.dto.TokenRequest;
+import org.project.spring.music_album.demo.dto.UpdateUsernameRequest;
+import org.project.spring.music_album.demo.dto.UserProfileResponse;
 import org.project.spring.music_album.demo.model.Role;
 import org.project.spring.music_album.demo.model.User;
 import org.project.spring.music_album.demo.repository.RoleRepository;
 import org.project.spring.music_album.demo.repository.UserRepository;
 import org.project.spring.music_album.demo.service.AccountEmailService;
+import org.project.spring.music_album.demo.service.UserProfileService;
+import org.project.spring.music_album.demo.security.DatabaseUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,10 +36,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
@@ -49,6 +60,7 @@ public class AuthRestController {
     private final AuthenticationManager authenticationManager;
     private final String adminKey;
     private final AccountEmailService accountEmailService;
+    private final UserProfileService userProfileService;
 
     public AuthRestController(
             UserRepository userRepository,
@@ -57,7 +69,8 @@ public class AuthRestController {
             JwtTokenProvider jwtTokenProvider,
             AuthenticationManager authenticationManager,
             @Value("${admin.key}") String adminKey,
-            AccountEmailService accountEmailService) {
+            AccountEmailService accountEmailService,
+            UserProfileService userProfileService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -65,6 +78,7 @@ public class AuthRestController {
         this.authenticationManager = authenticationManager;
         this.adminKey = adminKey;
         this.accountEmailService = accountEmailService;
+        this.userProfileService = userProfileService;
     }
 
     @PostMapping("/register")
@@ -145,14 +159,69 @@ public class AuthRestController {
         }
     }
 
-    @PostMapping("/email-verification")
-    public ResponseEntity<?> requestEmailVerification(Authentication authentication,
-            @Valid @RequestBody EmailRequest request) {
+    @PostMapping("/account-deletion-request")
+    public ResponseEntity<?> requestAccountDeletion(Authentication authentication,
+            @Valid @RequestBody DeleteAccountRequest request) {
         try {
-            accountEmailService.requestEmailVerification(authentication.getName(), request.getEmail());
+            accountEmailService.requestAccountDeletion(authentication.getName(), request.getPassword());
             return ResponseEntity.accepted().body(Collections.singletonMap("message",
-                    "Se l'account può aggiungere un indirizzo, riceverai un link di verifica."));
+                    "Ti abbiamo inviato un link di conferma valido 15 minuti."));
         } catch (IllegalArgumentException | IllegalStateException exception) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", exception.getMessage()));
+        }
+    }
+
+    @PostMapping("/account-deletion-confirm")
+    public ResponseEntity<?> confirmAccountDeletion(@Valid @RequestBody TokenRequest request) {
+        try {
+            accountEmailService.confirmAccountDeletion(request.getToken());
+            return ResponseEntity.ok(Collections.singletonMap("message", "Account eliminato definitivamente."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", exception.getMessage()));
+        }
+    }
+
+    @GetMapping("/profile")
+    public UserProfileResponse getProfile(Authentication authentication) {
+        return userProfileService.getProfile(authentication.getName());
+    }
+
+    @PostMapping(value = "/profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateProfilePhoto(Authentication authentication,
+            @RequestPart("file") MultipartFile file) {
+        try {
+            userProfileService.updateProfileImage(authentication.getName(), file);
+            return ResponseEntity.ok(Collections.singletonMap("message", "Foto profilo aggiornata."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/profile/username")
+    public ResponseEntity<?> updateUsername(Authentication authentication,
+            @Valid @RequestBody UpdateUsernameRequest request) {
+        try {
+            User user = userProfileService.updateUsername(authentication.getName(), request.getUsername());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Username aggiornato.");
+            response.put("token", jwtTokenProvider.generateToken(new DatabaseUserDetails(user)));
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/profile/password")
+    public ResponseEntity<?> changePassword(Authentication authentication,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            User user = userProfileService.changePassword(authentication.getName(), request.getCurrentPassword(),
+                    request.getNewPassword());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password aggiornata.");
+            response.put("token", jwtTokenProvider.generateToken(new DatabaseUserDetails(user)));
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", exception.getMessage()));
         }
     }

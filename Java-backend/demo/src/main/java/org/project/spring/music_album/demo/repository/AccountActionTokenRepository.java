@@ -17,4 +17,6 @@ public interface AccountActionTokenRepository extends JpaRepository<AccountActio
     boolean existsByUser_IdAndTypeAndExpiresAtAfter(Integer userId, AccountTokenType type, Instant cutoff);
 
     void deleteByUser_IdAndType(Integer userId, AccountTokenType type);
+
+    void deleteByUser_Id(Integer userId);
 }

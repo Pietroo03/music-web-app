@@ -18,7 +18,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import ResendVerificationPage from './pages/ResendVerificationPage';
-import AddEmailPage from './pages/AddEmailPage';
+import AccountDeletionPage from './pages/AccountDeletionPage';
 import ProtectedRoute from './components/security/ProtecteddRoute';
 
 function App() {
@@ -35,7 +35,8 @@ function App() {
             <Route path='/reset-password' element={<ResetPasswordPage />}></Route>
             <Route path='/verify-email' element={<VerifyEmailPage />}></Route>
             <Route path='/resend-verification' element={<ResendVerificationPage />}></Route>
-            <Route path='/account/email' element={<AddEmailPage />}></Route>
+            <Route path='/account/delete' element={<AccountDeletionPage />}></Route>
+            <Route path='/delete-account' element={<AccountDeletionPage />}></Route>
             <Route path='/home' element={<HomePage />}></Route>
             <Route path='/albums' element={<AlbumsPage />}></Route>
             <Route path='/artists' element={<ArtistsPage />}></Route>

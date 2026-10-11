@@ -22,7 +22,7 @@ public class DatabaseUserDetails implements UserDetails {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
-        this.enabled = !Boolean.FALSE.equals(user.getEmailVerified());
+        this.enabled = Boolean.TRUE.equals(user.getEmailVerified());
         this.tokenVersion = user.getTokenVersion() == null ? 0 : user.getTokenVersion();
         this.authorities = new HashSet<GrantedAuthority>();
 
