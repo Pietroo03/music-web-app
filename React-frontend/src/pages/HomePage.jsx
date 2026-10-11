@@ -40,6 +40,12 @@ export default function HomePage() {
                         Guarda gli Artisti
                     </Link>
                 </div>
+                <p className="text-sm text-gray-600">
+                    Account creato prima dell'iscrizione con email?{" "}
+                    <Link to="/account/email" className="text-blue-600 hover:underline">
+                        Aggiungi un indirizzo per il recupero password
+                    </Link>
+                </p>
             </div>
         </>
     );

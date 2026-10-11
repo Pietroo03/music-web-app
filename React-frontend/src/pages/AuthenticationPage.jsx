@@ -1,5 +1,5 @@
 import { useState, useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../context/authContext"
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -11,12 +11,14 @@ export default function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false)
 
     const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [isAdmin, setIsAdmin] = useState(false)
     const [secret, setSecret] = useState("")
 
     const [error, setError] = useState(null)
+    const [notice, setNotice] = useState(null)
     const navigate = useNavigate()
     const { loadUserRole } = useContext(AuthContext)
 
@@ -44,7 +46,7 @@ export default function LoginPage() {
                         } else if (data.error === "Password errata") {
                             throw new Error("Password errata");
                         } else {
-                            throw new Error("Credenziali non valide");
+                            throw new Error(data.error || "Credenziali non valide");
                         }
                     });
                 }
@@ -77,12 +79,10 @@ export default function LoginPage() {
             return;
         }
 
-        const userData = { username, password };
+        const userData = { username, password, email };
         if (isAdmin) {
             userData.adminKey = secret;  // Aggiungi la parola segreta solo se èAdmin
         }
-
-        console.log(userData);
 
         fetch(register_api_url, {
             method: "POST",
@@ -94,20 +94,15 @@ export default function LoginPage() {
                 return res.json()
             })
             .then((data) => {
-
-                if (data.token) {
-                    localStorage.setItem("token", data.token); // Salva il token nel localStorage
-                }
-
                 setIsRegistering(false)
                 setUsername("")
+                setEmail("")
                 setPassword("")
                 setConfirmPassword("")
                 setIsAdmin(false)
                 setSecret("")
                 setError(null)
-                loadUserRole();
-                navigate("/home")
+                setNotice(data.message || "Controlla la tua email per verificare l'account.")
 
             })
             .catch(err => setError(err.message))
@@ -133,6 +128,20 @@ export default function LoginPage() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl"
                         />
                     </div>
+                    {isRegistering && (
+                        <div>
+                            <label className="block text-gray-700 font-semibold mb-1">Email</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                maxLength={254}
+                                autoComplete="email"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-xl"
+                            />
+                        </div>
+                    )}
                     <div>
                         <label className="block text-gray-700 font-semibold mb-1">Password</label>
                         <div className="relative">
@@ -214,6 +223,19 @@ export default function LoginPage() {
                     )}
 
                     {error && <p className="text-red-600 text-sm">{error}</p>}
+                    {notice && <p className="text-green-700 text-sm">{notice}</p>}
+
+                    {!isRegistering && (
+                        <div className="text-center text-sm">
+                            <Link to="/forgot-password" className="text-blue-600 hover:underline">
+                                Hai dimenticato la password?
+                            </Link>
+                            <span className="mx-2">·</span>
+                            <Link to="/resend-verification" className="text-blue-600 hover:underline">
+                                Reinvia verifica email
+                            </Link>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
@@ -228,6 +250,7 @@ export default function LoginPage() {
                         onClick={() => {
                             setIsRegistering(!isRegistering)
                             setError(null)
+                            setNotice(null)
                         }}
                         className="text-blue-600 hover:underline"
                     >

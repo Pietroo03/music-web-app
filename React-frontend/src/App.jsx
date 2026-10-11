@@ -14,6 +14,11 @@ import EditGenrePage from './pages/EditGenrePage';
 import GenresPage from './pages/GenresPage'
 import CreateGenrePage from './pages/CreateGenrePage';
 import AuthenticationPage from './pages/AuthenticationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
+import ResendVerificationPage from './pages/ResendVerificationPage';
+import AddEmailPage from './pages/AddEmailPage';
 import ProtectedRoute from './components/security/ProtecteddRoute';
 
 function App() {
@@ -26,6 +31,11 @@ function App() {
           <Route element={<AppLayout />}>
 
             <Route path='/' element={<AuthenticationPage />}></Route>
+            <Route path='/forgot-password' element={<ForgotPasswordPage />}></Route>
+            <Route path='/reset-password' element={<ResetPasswordPage />}></Route>
+            <Route path='/verify-email' element={<VerifyEmailPage />}></Route>
+            <Route path='/resend-verification' element={<ResendVerificationPage />}></Route>
+            <Route path='/account/email' element={<AddEmailPage />}></Route>
             <Route path='/home' element={<HomePage />}></Route>
             <Route path='/albums' element={<AlbumsPage />}></Route>
             <Route path='/artists' element={<ArtistsPage />}></Route>
@@ -83,4 +93,3 @@ function App() {
 }
 
 export default App
-
