@@ -34,7 +34,14 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/api/auth/verify-email",
+                                "/api/auth/resend-verification",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/email-verification").authenticated()
                         .requestMatchers("/api/auth/**").denyAll()
                         .requestMatchers(HttpMethod.GET, "/api/albums/**", "/api/artists/**", "/api/genres/**")
                         .hasAnyAuthority("USER", "ADMIN")

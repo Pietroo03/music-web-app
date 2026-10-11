@@ -14,12 +14,16 @@ public class DatabaseUserDetails implements UserDetails {
     private final Integer id;
     private final String username;
     private final String password;
+    private final boolean enabled;
+    private final int tokenVersion;
     private final Set<GrantedAuthority> authorities;
 
     public DatabaseUserDetails(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
+        this.enabled = !Boolean.FALSE.equals(user.getEmailVerified());
+        this.tokenVersion = user.getTokenVersion() == null ? 0 : user.getTokenVersion();
         this.authorities = new HashSet<GrantedAuthority>();
 
         for (Role userRole : user.getRoles()) {
@@ -61,6 +65,10 @@ public class DatabaseUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
+    }
+
+    public int getTokenVersion() {
+        return tokenVersion;
     }
 }

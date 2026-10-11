@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.project.spring.music_album.demo.config.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,8 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Se il token è valido, setta l'autenticazione nel contesto di sicurezza
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (AuthenticationException exception) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);

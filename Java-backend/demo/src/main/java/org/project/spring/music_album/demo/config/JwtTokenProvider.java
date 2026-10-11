@@ -2,8 +2,10 @@ package org.project.spring.music_album.demo.config;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.project.spring.music_album.demo.security.DatabaseUserDetails;
 import org.project.spring.music_album.demo.security.DatabaseUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +45,9 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", roles) // Aggiungi i ruoli come claim
+                .claim("tokenVersion", userDetails instanceof DatabaseUserDetails databaseUser
+                        ? databaseUser.getTokenVersion()
+                        : 0)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(secretKey) // Firma il token con la chiave
@@ -93,6 +98,13 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         String username = getUsernameFromToken(token); // Ottieni il nome utente dal token
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Integer tokenVersion = getClaimsFromToken(token).get("tokenVersion", Integer.class);
+        int currentVersion = userDetails instanceof DatabaseUserDetails databaseUser
+                ? databaseUser.getTokenVersion()
+                : 0;
+        if ((tokenVersion == null ? 0 : tokenVersion) != currentVersion) {
+            throw new BadCredentialsException("JWT revocato");
+        }
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

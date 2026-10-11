@@ -56,6 +56,22 @@ class DemoApplicationTests {
 	}
 
 	@Test
+	void registrationRequiresAnEmailAddress() throws Exception {
+		mockMvc.perform(post("/api/auth/register")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content("{\"username\":\"new-user\",\"password\":\"a-password\"}"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void passwordResetEndpointIsPublicAndDoesNotAcceptUnknownTokens() throws Exception {
+		mockMvc.perform(post("/api/auth/reset-password")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content("{\"token\":\"unknown-token\",\"password\":\"a-new-password\"}"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void jwtTokenCanBeSignedAndValidated() {
 		var user = User.withUsername("test-user")
 				.password("unused")
