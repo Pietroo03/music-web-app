@@ -3,13 +3,20 @@ package org.project.spring.music_album.demo.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.project.spring.music_album.demo.config.JwtTokenProvider;
+
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -18,27 +25,30 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, JwtTokenProvider jwtTokenProvider) throws Exception {
 
         http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // CSRF disabilitato solo per le API
-                )
+                // L'autenticazione usa esclusivamente il bearer token nell'header Authorization.
+                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(HttpMethod.POST, "/albums/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/albums/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/albums/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/albums", "/albums/**").hasAnyAuthority("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/artists/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/artists/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/artists/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/artists", "/albums/**").hasAnyAuthority("USER", "ADMIN")
-                        .requestMatchers("/genres", "/genres/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/**").permitAll())
-                .formLogin(withDefaults())
-                .logout(withDefaults())
-                .exceptionHandling(withDefaults());
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/**").denyAll()
+                        .requestMatchers(HttpMethod.GET, "/api/albums/**", "/api/artists/**", "/api/genres/**")
+                        .hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/albums/**", "/api/artists/**", "/api/genres/**")
+                        .hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/albums/**", "/api/artists/**", "/api/genres/**")
+                        .hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/albums/**", "/api/artists/**", "/api/genres/**")
+                        .hasAuthority("ADMIN")
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().denyAll())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

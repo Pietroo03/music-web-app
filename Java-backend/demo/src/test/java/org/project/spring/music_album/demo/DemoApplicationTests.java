@@ -1,13 +1,70 @@
 package org.project.spring.music_album.demo;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.test.web.servlet.MockMvc;
+import org.project.spring.music_album.demo.config.JwtTokenProvider;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class DemoApplicationTests {
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
 
 	@Test
 	void contextLoads() {
+	}
+
+	@Test
+	void catalogRequiresAuthentication() throws Exception {
+		mockMvc.perform(get("/api/albums"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void browserCanPreflightBearerTokenRequests() throws Exception {
+		mockMvc.perform(options("/api/albums")
+					.header("Origin", "http://localhost:5173")
+					.header("Access-Control-Request-Method", "GET")
+					.header("Access-Control-Request-Headers", "authorization"))
+				.andExpect(status().isOk())
+				.andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
+	}
+
+	@Test
+	void catalogChangesRequireAdminAuthority() throws Exception {
+		mockMvc.perform(post("/api/albums")
+					.with(user("regular-user").authorities(() -> "USER"))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content("{}"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void jwtTokenCanBeSignedAndValidated() {
+		var user = User.withUsername("test-user")
+				.password("unused")
+				.authorities("USER")
+				.build();
+
+		String token = jwtTokenProvider.generateToken(user);
+
+		org.junit.jupiter.api.Assertions.assertTrue(jwtTokenProvider.validateToken(token));
 	}
 
 }
