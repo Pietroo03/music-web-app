@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.project.spring.music_album.demo.dto.AlbumDetails;
 import org.project.spring.music_album.demo.model.Album;
 import org.project.spring.music_album.demo.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,55 +59,51 @@ public class AlbumRestController {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-            ResponseEntity<Map<String, Object>> searchResponse = restTemplate.exchange(
+            ResponseEntity<JsonNode> searchResponse = restTemplate.exchange(
                     deezerSearchUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<>() {
-                    });
+                    JsonNode.class);
 
-            Map<String, Object> body = searchResponse.getBody();
-            if (body == null || !body.containsKey("data")) {
+            JsonNode body = searchResponse.getBody();
+            if (body == null || !body.path("data").isArray()) {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
             }
 
-            List<Map<String, Object>> data = (List<Map<String, Object>>) body.get("data");
-            if (data.isEmpty()) {
+            JsonNode searchData = body.path("data");
+            if (searchData.isEmpty()) {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
             }
 
-            Number deezerAlbumIdNum = (Number) data.get(0).get("id");
-            if (deezerAlbumIdNum == null) {
+            JsonNode deezerAlbumIdNode = searchData.get(0).path("id");
+            if (!deezerAlbumIdNode.isNumber()) {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
             }
-            int deezerAlbumId = deezerAlbumIdNum.intValue();
+            int deezerAlbumId = deezerAlbumIdNode.intValue();
 
             String albumDetailUrl = "https://api.deezer.com/album/" + deezerAlbumId;
-            ResponseEntity<Map<String, Object>> albumResponse = restTemplate.exchange(
+            ResponseEntity<JsonNode> albumResponse = restTemplate.exchange(
                     albumDetailUrl,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<>() {
-                    });
+                    JsonNode.class);
 
-            Map<String, Object> albumData = albumResponse.getBody();
-            if (albumData == null || !albumData.containsKey("tracks")) {
+            JsonNode albumData = albumResponse.getBody();
+            if (albumData == null || !albumData.path("tracks").path("data").isArray()) {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
             }
 
-            Map<String, Object> tracksObj = (Map<String, Object>) albumData.get("tracks");
-            List<Map<String, Object>> tracksData = (List<Map<String, Object>>) tracksObj.get("data");
-
-            // 🔁 Qui costruisci lista di oggetti traccia con title, duration e preview
-            List<Map<String, Object>> tracks = tracksData.stream()
-                    .map(track -> {
-                        Map<String, Object> t = new HashMap<>();
-                        t.put("title", track.get("title"));
-                        t.put("duration", track.get("duration"));
-                        t.put("preview", track.get("preview"));
-                        return t;
-                    })
-                    .collect(Collectors.toList());
+            JsonNode tracksData = albumData.path("tracks").path("data");
+            List<Map<String, Object>> tracks = new ArrayList<>();
+            for (JsonNode track : tracksData) {
+                Map<String, Object> trackDetails = new HashMap<>();
+                trackDetails.put("title", track.path("title").asText(null));
+                trackDetails.put("duration", track.path("duration").isNumber()
+                        ? track.path("duration").numberValue()
+                        : null);
+                trackDetails.put("preview", track.path("preview").asText(null));
+                tracks.add(trackDetails);
+            }
 
             AlbumDetails albumWithTracks = new AlbumDetails(album, tracks);
             return new ResponseEntity<>(albumWithTracks, HttpStatus.OK);
