@@ -4,7 +4,7 @@ export default function SingleArtistcard({ artista, userRole, toggleModal, isMod
 
     return (
 
-        <div className="min-h-screen bg-gray-100 py-15 flex justify-center items-center">
+        <div className="min-h-screen bg-transparent py-15 flex justify-center items-center">
             <div className="max-w-3xl w-full flex flex-col items-center">
                 <div className="flex text-center mb-8 ">
                     <Link to="/artists" className="text-xl bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mr-4">

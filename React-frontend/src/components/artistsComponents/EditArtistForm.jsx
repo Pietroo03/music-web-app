@@ -2,7 +2,7 @@ export default function EditArtistForm({ handleSubmit, artist, handleChange, gen
 
     return (
 
-        <div className="min-h-screen bg-gray-100 py-15 flex justify-center items-center">
+        <div className="min-h-screen bg-transparent py-15 flex justify-center items-center">
             <div className="max-w-3xl w-full flex flex-col items-center">
                 <h1 className="text-3xl font-bold mb-6">Modifica Artista</h1>
                 <form onSubmit={handleSubmit} className="w-full bg-white p-8 rounded-2xl shadow-lg">

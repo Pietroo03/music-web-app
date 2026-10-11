@@ -1,1 +1,202 @@
 @import "tailwindcss";
+
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
+body {
+    background: #f3f2f7;
+}
+
+.app-shell {
+    background: linear-gradient(135deg, #f5f4f8 0%, #eeeff7 48%, #f7f1f1 100%);
+}
+
+.music-background {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 12% 35%, rgb(94 119 210 / 16%), transparent 34%),
+        radial-gradient(ellipse at 86% 70%, rgb(225 111 150 / 16%), transparent 32%),
+        radial-gradient(ellipse at 52% 22%, rgb(243 185 75 / 9%), transparent 26%);
+}
+
+.record-field,
+.music-notes {
+    position: absolute;
+    inset: 0;
+}
+
+.record {
+    position: absolute;
+    width: clamp(150px, 23vw, 330px);
+    aspect-ratio: 1;
+    border: 1px solid rgb(24 27 43 / 20%);
+    border-radius: 50%;
+    opacity: 1;
+    background: repeating-radial-gradient(circle, #030304 0 2px, #15161b 3px 4px, #07080a 5px 8px);
+    box-shadow: 0 12px 40px rgb(5 5 8 / 25%);
+    animation: record-spin 18s linear infinite;
+}
+
+.record::before,
+.record::after {
+    position: absolute;
+    content: "";
+    inset: 17%;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 50%;
+}
+
+.record::after {
+    inset: 30%;
+}
+
+.record-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    border: 5px solid #101115;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffb000, #ff4f87 52%, #536dfe);
+}
+
+.record-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.record-label::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 1;
+    background: #090a0d;
+    pointer-events: none;
+    content: "";
+}
+
+.record-one {
+    top: 16%;
+    left: -7%;
+}
+
+.record-two {
+    top: 53%;
+    right: -8%;
+    animation-duration: 24s;
+    animation-direction: reverse;
+}
+
+.record-three {
+    bottom: -21%;
+    left: 39%;
+    width: clamp(120px, 17vw, 245px);
+    animation-duration: 21s;
+}
+
+.record-four {
+    top: 8%;
+    right: 20%;
+    width: clamp(92px, 12vw, 168px);
+    animation-duration: 15s;
+}
+
+.record-five {
+    top: 43%;
+    left: 26%;
+    width: clamp(80px, 10vw, 140px);
+    animation-duration: 19s;
+    animation-direction: reverse;
+}
+
+.record-six {
+    right: 28%;
+    bottom: -10%;
+    width: clamp(105px, 14vw, 190px);
+    animation-duration: 22s;
+}
+
+.record-seven {
+    top: 70%;
+    left: 12%;
+    width: clamp(64px, 8vw, 112px);
+    animation-duration: 17s;
+}
+
+.record-eight {
+    top: 23%;
+    right: 2%;
+    width: clamp(72px, 9vw, 126px);
+    animation-duration: 20s;
+    animation-direction: reverse;
+}
+
+.record-nine {
+    top: 37%;
+    right: 39%;
+    width: clamp(58px, 7vw, 98px);
+    animation-duration: 16s;
+}
+
+.record-ten {
+    bottom: 12%;
+    left: 66%;
+    width: clamp(68px, 8.5vw, 119px);
+    animation-duration: 23s;
+    animation-direction: reverse;
+}
+
+.music-notes span {
+    position: absolute;
+    bottom: -3rem;
+    left: calc(7% + var(--note-index) * 12%);
+    color: #050507;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    opacity: 0;
+    animation: note-rise 11s ease-in-out infinite;
+    animation-delay: calc(var(--note-index) * -1.4s);
+}
+
+.music-notes span:nth-child(even) {
+    color: #080609;
+    animation-duration: 13s;
+}
+
+@keyframes record-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes note-rise {
+    0% { transform: translate3d(0, 0, 0) rotate(-12deg) scale(0.7); opacity: 0; }
+    14% { opacity: 0.7; }
+    68% { opacity: 0.6; }
+    100% { transform: translate3d(30px, -115vh, 0) rotate(18deg) scale(1.15); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .record,
+    .music-notes span {
+        animation: none;
+    }
+
+    .music-notes span {
+        bottom: auto;
+        top: calc(12% + var(--note-index) * 9%);
+        opacity: 0.2;
+    }
+}

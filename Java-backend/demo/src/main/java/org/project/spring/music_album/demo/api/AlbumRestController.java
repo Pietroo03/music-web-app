@@ -44,6 +44,14 @@ public class AlbumRestController {
         return albums;
     }
 
+    @GetMapping("/covers")
+    public List<String> covers() {
+        return albumService.findAll().stream()
+                .map(Album::getFoto)
+                .filter(photo -> photo != null && !photo.isBlank())
+                .toList();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AlbumDetails> show(@PathVariable Integer id) {
         Optional<Album> albumAttempt = albumService.findById(id);

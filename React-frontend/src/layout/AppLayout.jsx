@@ -1,17 +1,22 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/layoutComponents/Header";
 import Footer from "../components/layoutComponents/Footer";
+import MusicBackground from "../components/layoutComponents/MusicBackground";
 
 export default function AppLayout() {
+    const { pathname } = useLocation();
+    const isLoginPage = pathname === "/";
+
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="app-shell relative isolate flex min-h-screen flex-col">
+            <MusicBackground />
             <Header />
 
-            <main className="flex-1 bg-light">
+            <main className={`relative z-10 flex-1 ${isLoginPage ? "flex flex-col" : ""}`}>
                 <Outlet />
             </main>
 
-            <Footer />
+            <div className="relative z-10"><Footer /></div>
         </div>
     );
 }
