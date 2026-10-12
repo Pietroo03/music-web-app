@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.project.spring.music_album.demo.model.Album;
 
+// Risposta aggregata per la pagina dettaglio: dati dell'album più le tracce restituite da Deezer.
 public class AlbumDetails {
 
     private Album album;

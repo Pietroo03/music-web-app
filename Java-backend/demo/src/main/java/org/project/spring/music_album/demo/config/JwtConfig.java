@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfig {
 
+    // Il segreto arriva dalla configurazione esterna, quindi non è incorporato nel codice sorgente.
     @Value("${jwt.secret}")
     private String secretKey;
 

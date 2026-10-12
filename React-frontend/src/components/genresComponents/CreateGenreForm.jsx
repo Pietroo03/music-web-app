@@ -1,3 +1,4 @@
+// Il modulo controllato raccoglie il nome del genere e inoltra l invio al componente genitore.
 export default function CreateGenreForm({ handleSubmit, formData, handleChange }) {
 
     return (

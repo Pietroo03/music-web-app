@@ -51,6 +51,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
+// Raggruppa gli endpoint legati all'identità: registrazione, accesso, profilo e azioni via email.
 public class AuthRestController {
 
     private final UserRepository userRepository;
@@ -83,6 +84,7 @@ public class AuthRestController {
 
     @PostMapping("/register")
     @Transactional
+    // Valida i dati, salva l'utente con password cifrata e avvia la verifica dell'indirizzo email.
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             return new ResponseEntity<>("Nome utente o email già in uso!", HttpStatus.BAD_REQUEST);
@@ -92,14 +94,14 @@ public class AuthRestController {
             return new ResponseEntity<>("Nome utente o email già in uso!", HttpStatus.BAD_REQUEST);
         }
 
-        // Crea un nuovo utente
+        // Il database conserva l'hash BCrypt, mai la password ricevuta in chiaro.
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEmail(email);
         user.setEmailVerified(false);
 
-        // Imposta il ruolo per l'utente (es. USER)
+        // La chiave amministrativa abilita il ruolo ADMIN; senza chiave valida si assegna USER.
         Role role;
         if (registerRequest.getAdminKey() != null && registerRequest.getAdminKey().equals(adminKey)) {
             role = roleRepository.findByNome("ADMIN")
@@ -113,7 +115,7 @@ public class AuthRestController {
         roles.add(role);
         user.setRoles(roles);
 
-        // Salva l'utente nel database
+        // L'account nasce non verificato: il login resterà bloccato finché non si usa il link email.
         userRepository.save(user);
 
         accountEmailService.sendRegistrationVerification(user);
@@ -126,6 +128,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/verify-email")
+    // Il token viene verificato dal servizio che controlla hash, scadenza e uso previsto.
     public ResponseEntity<?> verifyEmail(@Valid @RequestBody TokenRequest request) {
         try {
             accountEmailService.verifyEmail(request.getToken());
@@ -136,6 +139,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/resend-verification")
+    // La risposta non rivela se l'indirizzo esiste, riducendo la possibilità di enumerare account.
     public ResponseEntity<?> resendVerification(@Valid @RequestBody EmailRequest request) {
         accountEmailService.resendEmailVerification(request.getEmail());
         return ResponseEntity.accepted().body(Collections.singletonMap("message",
@@ -143,6 +147,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/forgot-password")
+    // Anche qui il messaggio è generico per non rivelare se esiste un account con quell'email.
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody EmailRequest request) {
         accountEmailService.requestPasswordReset(request.getEmail());
         return ResponseEntity.accepted().body(Collections.singletonMap("message",
@@ -150,6 +155,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/reset-password")
+    // Il servizio consuma un token valido e sostituisce la password memorizzandone l'hash.
     public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordResetRequest request) {
         try {
             accountEmailService.resetPassword(request.getToken(), request.getPassword());
@@ -160,6 +166,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/account-deletion-request")
+    // Richiede sia la sessione autenticata sia la password attuale prima di inviare la conferma email.
     public ResponseEntity<?> requestAccountDeletion(Authentication authentication,
             @Valid @RequestBody DeleteAccountRequest request) {
         try {
@@ -172,6 +179,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/account-deletion-confirm")
+    // La cancellazione definitiva richiede il token di conferma ricevuto via email.
     public ResponseEntity<?> confirmAccountDeletion(@Valid @RequestBody TokenRequest request) {
         try {
             accountEmailService.confirmAccountDeletion(request.getToken());
@@ -182,11 +190,13 @@ public class AuthRestController {
     }
 
     @GetMapping("/profile")
+    // Il nome utente deriva dall'identità già autenticata, non dal corpo della richiesta.
     public UserProfileResponse getProfile(Authentication authentication) {
         return userProfileService.getProfile(authentication.getName());
     }
 
     @PostMapping(value = "/profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // Riceve il file multipart e delega al servizio controlli di formato, peso e dimensioni.
     public ResponseEntity<?> updateProfilePhoto(Authentication authentication,
             @RequestPart("file") MultipartFile file) {
         try {
@@ -198,6 +208,7 @@ public class AuthRestController {
     }
 
     @PutMapping("/profile/username")
+    // Dopo un cambio username restituisce un JWT aggiornato perché lo username è la sua identità.
     public ResponseEntity<?> updateUsername(Authentication authentication,
             @Valid @RequestBody UpdateUsernameRequest request) {
         try {
@@ -212,6 +223,7 @@ public class AuthRestController {
     }
 
     @PutMapping("/profile/password")
+    // Il cambio password rinnova il JWT per invalidare le sessioni emesse con la password precedente.
     public ResponseEntity<?> changePassword(Authentication authentication,
             @Valid @RequestBody ChangePasswordRequest request) {
         try {
@@ -227,6 +239,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/login")
+    // Spring verifica le credenziali; se valide, il provider crea il token che il frontend userà nelle API.
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
             // Tenta di autenticare con username e password

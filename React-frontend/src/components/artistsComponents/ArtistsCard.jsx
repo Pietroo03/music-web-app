@@ -1,3 +1,4 @@
+// Questo componente filtra e dispone le schede degli artisti ricevuti dalla pagina.
 import { Link } from "react-router-dom"
 
 export default function ArtistCard({ artists }) {

@@ -30,12 +30,14 @@ public class GenereRestController {
         this.genereService = genereService;
     }
 
+    // Jackson serializza la lista di oggetti Genere in JSON per il frontend.
     @GetMapping
     public List<Genere> index() {
         List<Genere> generi = genereService.findAll();
         return generi;
     }
 
+    // Restituisce un genere specifico oppure HTTP 404 se l'ID non è presente.
     @GetMapping("/{id}")
     public ResponseEntity<Genere> show(@PathVariable Integer id) {
         Optional<Genere> genereAttempt = genereService.findById(id);
@@ -47,11 +49,13 @@ public class GenereRestController {
         return new ResponseEntity<Genere>(genereAttempt.get(), HttpStatus.OK);
     }
 
+    // @Valid applica al body JSON i vincoli dichiarati nel modello Genere.
     @PostMapping
     public Genere store(@Valid @RequestBody Genere genere) {
         return genereService.create(genere);
     }
 
+    // L'ID dell'URL prevale su quello eventualmente inviato nel body.
     @PutMapping("/{id}")
     public ResponseEntity<Genere> update(@Valid @RequestBody Genere genere, @PathVariable Integer id) {
 
@@ -64,6 +68,7 @@ public class GenereRestController {
 
     }
 
+    // Verifica l'esistenza prima di delegare la cancellazione al service.
     @DeleteMapping("/{id}")
     public ResponseEntity<Genere> delete(@Valid @PathVariable Integer id) {
 

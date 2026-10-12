@@ -1,3 +1,4 @@
+/* Gli stili globali impostano il tema, la disposizione delle pagine e le animazioni decorative. */
 @import "tailwindcss";
 
 html,
@@ -6,6 +7,7 @@ body,
     min-height: 100%;
 }
 
+/* Fondo chiaro condiviso sotto il layer artistico dell'app. */
 body {
     background: #f3f2f7;
 }
@@ -14,6 +16,7 @@ body {
     background: linear-gradient(135deg, #f5f4f8 0%, #eeeff7 48%, #f7f1f1 100%);
 }
 
+/* Layer fisso dietro ai contenuti; non intercetta click e non modifica il flusso della pagina. */
 .music-background {
     position: fixed;
     z-index: 0;
@@ -32,6 +35,7 @@ body {
     inset: 0;
 }
 
+/* Vinile composto da anelli concentrici CSS: l'etichetta centrale può contenere la copertina dell'album. */
 .record {
     position: absolute;
     width: clamp(150px, 23vw, 330px);
@@ -90,6 +94,7 @@ body {
     content: "";
 }
 
+/* Posizioni e velocità diverse evitano che i dischi ruotino tutti come un unico blocco. */
 .record-one {
     top: 16%;
     left: -7%;
@@ -161,6 +166,7 @@ body {
     animation-direction: reverse;
 }
 
+/* Le note salgono in sequenza; l'indice personalizza posizione e ritardo di ogni nota. */
 .music-notes span {
     position: absolute;
     bottom: -3rem;
@@ -177,6 +183,7 @@ body {
     animation-duration: 13s;
 }
 
+/* Le animazioni cambiano solo trasformazioni e opacità, senza spostare il layout dei contenuti. */
 @keyframes record-spin {
     to { transform: rotate(360deg); }
 }
@@ -189,6 +196,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    /* Rispetta l'impostazione di accessibilità del sistema riducendo movimento non essenziale. */
     .record,
     .music-notes span {
         animation: none;

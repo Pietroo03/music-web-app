@@ -1,12 +1,24 @@
-# React + Vite
+# Album Collection
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfaccia React per consultare artisti, album e generi. I componenti React si trovano in `src/`; l'applicazione parla con il backend Spring tramite l'indirizzo configurato in `VITE_EXPRESS_API_SERVER`.
 
-Currently, two official plugins are available:
+## Struttura del frontend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `src/App.jsx` dichiara le rotte e distingue le pagine pubbliche dalle pagine riservate agli amministratori.
+- `src/layout/AppLayout.jsx` compone intestazione, contenuto della rotta, sfondo animato e footer.
+- `src/context/` condivide nel tree React il ruolo ricavato dal JWT.
+- `src/pages/` contiene le schermate: ciascuna pagina carica o salva dati e coordina i componenti visuali.
+- `src/components/` contiene moduli, schede e parti condivise come header e sfondo musicale.
+- `src/utils/apiFetch.js` aggiunge il JWT alle richieste API quando è presente nel browser.
+- `src/index.css` contiene regole globali, disposizione del fondale e animazioni.
 
-## Expanding the ESLint configuration
+## Comandi definiti in `package.json`
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+`package.json` è JSON, quindi non supporta commenti al suo interno. Le descrizioni dei suoi script sono riportate qui:
+
+- `npm run dev` avvia il server Vite per lo sviluppo locale.
+- `npm run build` crea la versione compilata dentro `dist/`.
+- `npm run lint` esegue ESLint sui sorgenti e segnala problemi di stile o uso del codice.
+- `npm run preview` serve localmente la versione già compilata.
+
+`package-lock.json` è generato da npm e fissa le versioni precise delle dipendenze: non si modifica a mano né si inseriscono commenti.

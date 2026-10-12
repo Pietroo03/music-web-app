@@ -20,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+// Contiene le regole del profilo che non appartengono al controller HTTP.
 public class UserProfileService {
 
+    // I limiti proteggono memoria e decoder da file troppo grandi o immagini con dimensioni anomale.
     private static final long MAX_IMAGE_BYTES = 2 * 1024 * 1024;
     private static final int MAX_IMAGE_DIMENSION = 2048;
     private static final long MAX_IMAGE_PIXELS = 4_000_000;
@@ -35,16 +37,19 @@ public class UserProfileService {
     }
 
     @Transactional(readOnly = true)
+    // Prepara la risposta del profilo senza modificare dati persistenti.
     public UserProfileResponse getProfile(String username) {
         return toResponse(findUser(username));
     }
 
     @Transactional
+    // Valida l'immagine e la salva come entità collegata all'utente.
     public void updateProfileImage(String username, MultipartFile image) {
         if (image == null || image.isEmpty() || image.getSize() > MAX_IMAGE_BYTES) {
             throw new IllegalArgumentException("Scegli un'immagine non vuota di massimo 2 MB.");
         }
 
+        // Il tipo MIME dichiarato è un primo filtro; validateImage controlla anche i byte reali.
         String contentType = image.getContentType();
         if (!"image/png".equalsIgnoreCase(contentType) && !"image/jpeg".equalsIgnoreCase(contentType)) {
             throw new IllegalArgumentException("Sono supportate solo immagini PNG o JPEG.");
@@ -69,6 +74,7 @@ public class UserProfileService {
     }
 
     @Transactional
+    // Cambia username solo se non è già assegnato a un altro utente.
     public User updateUsername(String currentUsername, String requestedUsername) {
         String newUsername = requestedUsername == null ? "" : requestedUsername.trim();
         User user = findUser(currentUsername);
@@ -85,6 +91,7 @@ public class UserProfileService {
     }
 
     @Transactional
+    // Verifica la password attuale, impedisce di riutilizzarla e aggiorna la versione JWT.
     public User changePassword(String username, String currentPassword, String newPassword) {
         User user = findUser(username);
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
@@ -104,6 +111,7 @@ public class UserProfileService {
     }
 
     private static UserProfileResponse toResponse(User user) {
+        // La foto diventa una data URL, così il frontend può mostrarla senza un endpoint separato.
         String profileImage = null;
         UserProfileImage image = user.getProfileImage();
         if (image != null) {
@@ -114,6 +122,7 @@ public class UserProfileService {
     }
 
     private static void validateImage(byte[] bytes, String contentType) throws IOException {
+        // ImageIO legge il formato effettivo e le dimensioni senza fidarsi del solo nome del file.
         try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
             if (input == null) {
                 throw new IllegalArgumentException("Il file selezionato non è un'immagine valida.");

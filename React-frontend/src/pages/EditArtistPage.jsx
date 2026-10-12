@@ -1,3 +1,4 @@
+// Questa pagina carica artista e generi, gestisce i campi modificabili e invia l aggiornamento.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -70,6 +71,7 @@ export default function EditArtistPage() {
         e.preventDefault();
 
         // Prepara l'oggetto per l'aggiornamento
+        // Gli album sono dati correlati in sola lettura nel form e non devono essere reinviati nell'aggiornamento.
         const updatedArtist = { ...artist };
         delete updatedArtist.albums; // Rimuove albums prima di inviare la richiesta
 

@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+// Gestisce i link email di verifica, recupero password ed eliminazione account.
 public class AccountEmailService {
 
+    // Ogni tipo di azione ha una durata distinta, espressa in minuti.
     private static final long EMAIL_TOKEN_MINUTES = 24 * 60;
     private static final long RESET_TOKEN_MINUTES = 30;
     private static final long DELETE_TOKEN_MINUTES = 15;
@@ -54,17 +56,20 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Inizia la verifica dell'indirizzo inserito in fase di registrazione.
     public void sendRegistrationVerification(User user) {
         issueEmailVerification(user, normalizeEmail(user.getEmail()));
     }
 
     private void issueEmailVerification(User user, String targetEmail) {
+        // Se l'utente cambia indirizzo, il servizio verifica prima che non appartenga già a un altro account.
         ensureEmailAvailable(targetEmail, user.getId());
         issueToken(user, targetEmail, AccountTokenType.EMAIL_VERIFICATION,
                 EMAIL_TOKEN_MINUTES, "/verify-email?token=");
     }
 
     @Transactional
+    // Invia nuovamente il link solo se l'account esiste e non è già verificato.
     public void resendEmailVerification(String email) {
         userRepository.findByEmailIgnoreCase(normalizeEmail(email))
                 .filter(user -> !Boolean.TRUE.equals(user.getEmailVerified()))
@@ -72,6 +77,7 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Applica l'indirizzo verificato e poi rimuove i token di verifica ormai inutili.
     public void verifyEmail(String rawToken) {
         AccountActionToken token = findValidToken(rawToken, AccountTokenType.EMAIL_VERIFICATION);
         User user = token.getUser();
@@ -85,6 +91,7 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Per privacy la richiesta non genera errore se l'email non è registrata o verificata.
     public void requestPasswordReset(String email) {
         userRepository.findByEmailIgnoreCase(normalizeEmail(email))
                 .filter(user -> Boolean.TRUE.equals(user.getEmailVerified()))
@@ -93,6 +100,7 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Imposta la nuova password e incrementa la versione per rendere obsoleti i vecchi JWT.
     public void resetPassword(String rawToken, String newPassword) {
         AccountActionToken token = findValidToken(rawToken, AccountTokenType.PASSWORD_RESET);
         User user = token.getUser();
@@ -103,6 +111,7 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Richiede la password attuale e un'email verificata prima di inviare il link di conferma.
     public void requestAccountDeletion(String username, String currentPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Account non trovato"));
@@ -118,6 +127,7 @@ public class AccountEmailService {
     }
 
     @Transactional
+    // Consuma il token e rimuove l'utente; la transazione mantiene atomica l'operazione.
     public void confirmAccountDeletion(String rawToken) {
         AccountActionToken token = findValidToken(rawToken, AccountTokenType.ACCOUNT_DELETION);
         User user = token.getUser();
@@ -128,12 +138,14 @@ public class AccountEmailService {
     private void issueToken(User user, String targetEmail, AccountTokenType type, long lifetimeMinutes,
             String pathAndQuery) {
         Instant now = Instant.now();
+        // Evita invii ripetuti a raffica: un token quasi nuovo è già valido e non serve crearne un altro.
         Instant resendCutoff = now.plus(lifetimeMinutes - 1, ChronoUnit.MINUTES);
         if (tokenRepository.existsByUser_IdAndTypeAndExpiresAtAfter(user.getId(), type, resendCutoff)) {
             return;
         }
         tokenRepository.deleteByUser_IdAndType(user.getId(), type);
 
+        // Il token casuale viene mostrato soltanto nel link; nel database si conserva solo il suo hash.
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         String rawToken = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
@@ -146,6 +158,7 @@ public class AccountEmailService {
         token.setTargetEmail(targetEmail);
         tokenRepository.save(token);
 
+        // Il percorso dipende dal tipo di azione, mentre host e porta arrivano dalla configurazione.
         String link = frontendBaseUrl + pathAndQuery + rawToken;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailFrom);
@@ -168,6 +181,7 @@ public class AccountEmailService {
     }
 
     private AccountActionToken findValidToken(String rawToken, AccountTokenType type) {
+        // L'hash e il tipo identificano il token; la stessa stringa non può valere per azioni diverse.
         if (rawToken == null || rawToken.isBlank()) {
             throw new IllegalArgumentException("Token non valido o scaduto");
         }
@@ -181,6 +195,7 @@ public class AccountEmailService {
     }
 
     private void ensureEmailAvailable(String email, Integer currentUserId) {
+        // In una verifica si esclude l'utente stesso, ma non si può riutilizzare l'indirizzo di un altro account.
         userRepository.findByEmailIgnoreCase(email)
                 .filter(existing -> !existing.getId().equals(currentUserId))
                 .ifPresent(existing -> {
@@ -189,6 +204,7 @@ public class AccountEmailService {
     }
 
     private static String normalizeEmail(String email) {
+        // Email confrontate senza differenze di maiuscole o spazi accidentali.
         return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
     }
 

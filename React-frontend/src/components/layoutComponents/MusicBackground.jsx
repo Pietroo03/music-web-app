@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiFetch from "../../utils/apiFetch";
 
+// Elementi decorativi: i centri dei vinili usano copertine reali caricate dall'API pubblica.
 const records = [
     "record-one",
     "record-two",
@@ -20,6 +21,7 @@ export default function MusicBackground() {
     const [albumCovers, setAlbumCovers] = useState([]);
 
     useEffect(() => {
+        // Le copertine vengono mescolate una volta; il flag impedisce aggiornamenti dopo lo smontaggio.
         const coversUrl = `${import.meta.env.VITE_EXPRESS_API_SERVER.trim()}/albums/covers`;
         let isCurrent = true;
         apiFetch(coversUrl)
@@ -37,6 +39,7 @@ export default function MusicBackground() {
         return () => { isCurrent = false; };
     }, []);
 
+    // aria-hidden evita che i lettori di schermo annuncino elementi soltanto decorativi.
     return (
         <div className="music-background" aria-hidden="true">
             <div className="record-field">

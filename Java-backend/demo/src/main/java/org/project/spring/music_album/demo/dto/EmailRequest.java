@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// DTO condiviso dalle richieste che partono da un indirizzo email (reset e reinvio verifica).
 public class EmailRequest {
     @NotBlank
     @Email

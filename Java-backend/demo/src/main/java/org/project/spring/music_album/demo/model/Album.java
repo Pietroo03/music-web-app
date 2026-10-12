@@ -22,11 +22,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
+// Ogni oggetto Album rappresenta una riga della tabella albums; JPA converte i campi in colonne.
 @Entity
 @Table(name = "albums")
 
 public class Album {
 
+    // L'ID viene assegnato da MySQL quando il record viene inserito.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -54,11 +56,14 @@ public class Album {
     @Min(value = 1, message = "Le tracce devono essere maggiori di 0")
     private Integer tracce;
 
+    // Molti album possono appartenere allo stesso artista; EAGER carica l'artista quando si legge l'album.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "artist_id", nullable = false)
     @JsonIgnoreProperties("albums")
     private Artista artista;
 
+    // Un album può avere più generi e lo stesso genere può appartenere a più album.
+    // La tabella di collegamento salva le coppie album-genere senza duplicare i dati dei generi.
     @ManyToMany
     @JoinTable(name = "album_genre", joinColumns = @JoinColumn(name = "album_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genere> generi;

@@ -10,6 +10,7 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+// La foto è separata dall'account per non caricare i byte dell'immagine a ogni lettura dell'utente.
 @Entity
 @Table(name = "user_profile_images")
 public class UserProfileImage {
@@ -17,11 +18,13 @@ public class UserProfileImage {
     @Id
     private Integer userId;
 
+    // La chiave primaria della foto è anche la chiave esterna dell'utente: può esserci al massimo una foto.
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // MEDIUMBLOB consente di salvare i byte del file immagine direttamente in MySQL.
     @Lob
     @Column(nullable = false, columnDefinition = "MEDIUMBLOB")
     private byte[] imageData;

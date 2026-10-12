@@ -1,3 +1,4 @@
+// Questa pagina invia al backend il token ricevuto per attivare l indirizzo email.
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -9,6 +10,7 @@ export default function VerifyEmailPage() {
     const [message, setMessage] = useState("Verifica in corso...");
     const [error, setError] = useState("");
 
+    // Il link email contiene il token nella query string; started evita una doppia chiamata in React StrictMode.
     useEffect(() => {
         if (!token || started.current) {
             if (!token) setError("Il link non contiene un token valido.");

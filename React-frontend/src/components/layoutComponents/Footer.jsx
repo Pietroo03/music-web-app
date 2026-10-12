@@ -1,3 +1,4 @@
+// Footer condiviso: anno aggiornato automaticamente e collegamenti esterni del progetto.
 export default function Footer() {
     return (
         <footer className="flex justify-between items-center p-8 bg-gray-800 text-white">

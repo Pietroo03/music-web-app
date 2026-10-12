@@ -21,6 +21,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        // Spring Security chiama questo metodo durante login e quando deve ricostruire un utente dal JWT.
         Optional<User> userAttempt = userRepository.findByUsername(username);
 
         if (userAttempt.isEmpty()) {

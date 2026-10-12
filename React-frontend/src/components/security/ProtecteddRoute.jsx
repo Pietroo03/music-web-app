@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-// Componente Route Guard
+// Evita di mostrare pagine riservate se manca il JWT o il ruolo non coincide con quello richiesto.
 const ProtectedRoute = ({ children, requiredRole }) => {
     const token = localStorage.getItem("token");
 
@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         return <Navigate to="/login" />;
     }
 
-    // Decodifica il token per estrarre i ruoli
+    // La decodifica legge i claim del JWT; l'autorizzazione effettiva viene comunque verificata dal backend.
     const decodedToken = JSON.parse(atob(token.split(".")[1]));
     console.log(decodedToken);
     const userRole = decodedToken.roles && decodedToken.roles.length > 0 ? decodedToken.roles[0] : null;

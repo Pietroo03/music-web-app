@@ -30,12 +30,14 @@ public class ArtistaRestController {
         this.artistaService = artistaService;
     }
 
+    // Spring converte automaticamente la lista Java restituita in una risposta JSON.
     @GetMapping
     public List<Artista> index() {
         List<Artista> artisti = artistaService.findAll();
         return artisti;
     }
 
+    // L'ID arriva dal percorso URL; Optional consente di rispondere 404 quando il record manca.
     @GetMapping("/{id}")
     public ResponseEntity<Artista> show(@PathVariable Integer id) {
         Optional<Artista> artistaAttempt = artistaService.findById(id);
@@ -47,11 +49,13 @@ public class ArtistaRestController {
         return new ResponseEntity<Artista>(artistaAttempt.get(), HttpStatus.OK);
     }
 
+    // Riceve un artista in JSON e @Valid controlla i vincoli dichiarati nel modello.
     @PostMapping
     public Artista store(@Valid @RequestBody Artista artista) {
         return artistaService.create(artista);
     }
 
+    // Prima conferma che il record esista, poi impone al body l'ID dell'URL.
     @PutMapping("/{id}")
     public ResponseEntity<Artista> update(@Valid @RequestBody Artista artista, @PathVariable Integer id) {
 
@@ -64,6 +68,7 @@ public class ArtistaRestController {
 
     }
 
+    // La rimozione è delegata al service perché deve gestire le relazioni con album e generi.
     @DeleteMapping("/{id}")
     public ResponseEntity<Artista> delete(@Valid @PathVariable Integer id) {
 

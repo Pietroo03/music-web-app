@@ -19,6 +19,7 @@ public class DatabaseUserDetails implements UserDetails {
     private final Set<GrantedAuthority> authorities;
 
     public DatabaseUserDetails(User user) {
+        // Adatta il modello JPA User all'interfaccia standard richiesta da Spring Security.
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();

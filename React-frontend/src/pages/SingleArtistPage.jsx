@@ -1,3 +1,4 @@
+// Questa pagina recupera i dettagli di un artista e collega le azioni della relativa scheda.
 import apiFetch from "../utils/apiFetch";
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';

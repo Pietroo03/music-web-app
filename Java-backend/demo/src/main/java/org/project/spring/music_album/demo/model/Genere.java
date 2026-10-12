@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// Modello persistente dei generi musicali, salvato nella tabella genres.
 @Entity
 @Table(name = "genres")
 public class Genere {
@@ -25,6 +26,8 @@ public class Genere {
     @Size(min = 3, message = "Il nome deve essere lungo almeno 3 caratteri")
     private String nome;
 
+    // Questi sono i lati inversi delle relazioni: le tabelle ponte sono dichiarate in Artista e Album.
+    // JsonIgnore impedisce che la serializzazione JSON rientri ciclicamente tra genere e opere collegate.
     @ManyToMany(mappedBy = "generi")
     @JsonIgnore
     private List<Artista> artisti;

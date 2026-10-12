@@ -2,6 +2,7 @@ package org.project.spring.music_album.demo.dto;
 
 import java.util.List;
 
+// Forma della risposta di autenticazione prevista quando API restituisce token e informazioni essenziali.
 public class JwtResponse {
     private String token;
     private String username;

@@ -1,3 +1,4 @@
+// La schermata alterna accesso e registrazione, invia le credenziali e gestisce la sessione ricevuta.
 import { useState, useContext } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../context/authContext"
@@ -28,6 +29,7 @@ export default function LoginPage() {
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
+    // Invia user e password; il JWT restituito viene salvato così le successive API possono autenticare l'utente.
     const handleLogin = (e) => {
         e.preventDefault()
 
@@ -67,6 +69,7 @@ export default function LoginPage() {
             });
     }
 
+    // Prima controlla che le password coincidano, poi invia i dati e mostra la conferma della verifica email.
     const handleRegister = (e) => {
         e.preventDefault()
         if (password !== confirmPassword) {
@@ -79,6 +82,7 @@ export default function LoginPage() {
             return;
         }
 
+        // La chiave amministrativa viene trasmessa solo se l'utente ha scelto la registrazione admin.
         const userData = { username, password, email };
         if (isAdmin) {
             userData.adminKey = secret;  // Aggiungi la parola segreta solo se èAdmin

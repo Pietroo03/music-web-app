@@ -1,3 +1,4 @@
+// Questa pagina carica i generi, conserva i campi dell artista e prepara i riferimenti da inviare.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -89,6 +90,7 @@ export default function CreateArtistPage() {
         }
 
         // Formatta correttamente i generi per la richiesta API
+        // I checkbox conservano ID semplici; il backend riceve invece i generi come oggetti identificabili.
         const formattedData = {
             ...formData,
             generi: formData.generi.map(id => ({ id })) // Generi come array di oggetti con ID

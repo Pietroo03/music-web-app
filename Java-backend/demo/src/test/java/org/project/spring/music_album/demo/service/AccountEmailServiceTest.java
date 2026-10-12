@@ -30,6 +30,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
+// Test isolati del servizio email: repository, encoder e SMTP sono sostituiti da mock controllabili.
 class AccountEmailServiceTest {
 
     @Mock
@@ -47,12 +48,14 @@ class AccountEmailServiceTest {
     private AccountEmailService service;
 
     @BeforeEach
+    // Crea il servizio con URL e mittente di test, senza inviare email reali.
     void setUp() {
         service = new AccountEmailService(tokenRepository, userRepository, passwordEncoder, mailSender,
                 "http://localhost:5173", "noreply@example.test");
     }
 
     @Test
+    // La registrazione deve spedire il token originale ma salvare nel DB soltanto l'hash.
     void registrationSendsVerificationLinkAndStoresOnlyTokenHash() {
         User user = user(10, "new@example.test");
         ArgumentCaptor<AccountActionToken> tokenCaptor = ArgumentCaptor.forClass(AccountActionToken.class);
@@ -75,6 +78,7 @@ class AccountEmailServiceTest {
     }
 
     @Test
+    // La verifica normalizza l'email, attiva l'account e invalida il token già usato.
     void verificationActivatesNewAddressAndConsumesToken() {
         User user = user(11, null);
         AccountActionToken token = actionToken(user, AccountTokenType.EMAIL_VERIFICATION,
@@ -92,6 +96,7 @@ class AccountEmailServiceTest {
     }
 
     @Test
+    // Il reset salva un nuovo hash password e aumenta la versione usata per revocare i vecchi JWT.
     void resetChangesPasswordAndInvalidatesPriorJwtVersions() {
         User user = user(12, "reset@example.test");
         AccountActionToken token = actionToken(user, AccountTokenType.PASSWORD_RESET, user.getEmail());
@@ -108,6 +113,7 @@ class AccountEmailServiceTest {
     }
 
     @Test
+    // Una email sconosciuta non deve produrre un invio né rivelare informazioni sull'account.
     void unknownEmailDoesNotSendRecoveryMail() {
         when(userRepository.findByEmailIgnoreCase("unknown@example.test")).thenReturn(Optional.empty());
 
@@ -118,6 +124,7 @@ class AccountEmailServiceTest {
     }
 
     @Test
+    // Un token già scaduto deve essere rifiutato prima di cambiare la password.
     void expiredTokensAreRejected() {
         User user = user(13, "expired@example.test");
         AccountActionToken token = actionToken(user, AccountTokenType.PASSWORD_RESET, user.getEmail());
@@ -131,6 +138,7 @@ class AccountEmailServiceTest {
     }
 
     private static User user(Integer id, String email) {
+        // Fixture minima: nei test del servizio bastano ID, username e indirizzo.
         User user = new User();
         user.setId(id);
         user.setUsername("user-" + id);
@@ -139,6 +147,7 @@ class AccountEmailServiceTest {
     }
 
     private static AccountActionToken actionToken(User user, AccountTokenType type, String targetEmail) {
+        // Costruisce un token valido per i test, lasciando il raw token fuori dalla persistenza simulata.
         AccountActionToken token = new AccountActionToken();
         token.setUser(user);
         token.setTokenHash("a".repeat(64));

@@ -1,3 +1,4 @@
+// Il modulo visualizza e modifica i dati dell artista già caricato dalla pagina.
 export default function EditArtistForm({ handleSubmit, artist, handleChange, generi, handleGenreChange }) {
 
     return (

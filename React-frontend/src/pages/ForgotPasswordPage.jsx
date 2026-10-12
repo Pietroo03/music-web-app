@@ -1,3 +1,4 @@
+// Questa pagina richiede via email un link temporaneo per reimpostare la password.
 import { useState } from "react";
 import { Link } from "react-router-dom";
 

@@ -1,3 +1,4 @@
+// Il modulo controllato mostra i dati esistenti e riporta al genitore le modifiche dei campi.
 export default function EditAlbumForm({ handleSubmit, album, handleChange, generi, handleGenreChange, artisti }) {
 
     return (

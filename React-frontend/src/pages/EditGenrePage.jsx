@@ -1,3 +1,4 @@
+// Questa pagina recupera il genere indicato nell URL e invia al backend il nome aggiornato.
 import apiFetch from "../utils/apiFetch";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

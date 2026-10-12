@@ -1,3 +1,4 @@
+// Questa pagina usa il token del link email per inviare la nuova password.
 import { useContext, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
@@ -5,6 +6,7 @@ import { AuthContext } from "../context/authContext";
 export default function ResetPasswordPage() {
     const apiUrl = `${import.meta.env.VITE_EXPRESS_API_SERVER}/auth/reset-password`;
     const [searchParams] = useSearchParams();
+    // Il token è un segreto temporaneo inserito nell'URL inviato via email e accompagna la nuova password.
     const token = searchParams.get("token");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

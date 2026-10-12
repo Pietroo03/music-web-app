@@ -1,3 +1,4 @@
+// Questa pagina mantiene i valori del nuovo album, carica le opzioni e invia il modulo al backend.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";

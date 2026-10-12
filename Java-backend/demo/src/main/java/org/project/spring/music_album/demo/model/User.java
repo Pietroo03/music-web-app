@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
+// Account persistente: questa classe descrive la riga users e le sue relazioni con ruoli e foto.
 @Entity
 @Table(name = "users")
 public class User {
@@ -35,6 +36,7 @@ public class User {
     @NotBlank(message = "Inserire una password valida")
     private String password;
 
+    // L'email è obbligatoria e unica perché serve per verifica, recupero password e cancellazione.
     @Email
     @Column(nullable = false, unique = true, length = 254)
     private String email;
@@ -42,14 +44,19 @@ public class User {
     @Column(nullable = false)
     private Boolean emailVerified;
 
+    // Aumentando questa versione si possono invalidare i JWT già emessi senza aspettarne la scadenza.
     private Integer tokenVersion;
 
+    // La data viene creata alla prima persistenza e poi non viene modificata dagli aggiornamenti.
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
+    // La foto è opzionale e dipende dal ciclo di vita dell'account; mappedBy indica la FK in UserProfileImage.
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private UserProfileImage profileImage;
 
+    // L'utente possiede questa relazione molti-a-molti: role_user collega gli ID di utenti e ruoli.
+    // EAGER carica i ruoli insieme all'utente perché Spring Security li usa subito per autorizzare le API.
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
@@ -114,6 +121,7 @@ public class User {
         this.profileImage = profileImage;
     }
 
+    // JPA chiama questo metodo una volta prima dell'INSERT, così la data è impostata anche senza input frontend.
     @PrePersist
     void initializeCreatedAt() {
         if (createdAt == null) {

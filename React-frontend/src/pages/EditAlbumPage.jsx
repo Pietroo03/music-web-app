@@ -1,3 +1,4 @@
+// Questa pagina carica album, artisti e generi, conserva le modifiche e invia l aggiornamento.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -91,6 +92,7 @@ export default function EditAlbumPage() {
         e.preventDefault();
 
         // Prepara il payload: trasformo artistaId in un oggetto artista con solo id
+        // L'API si aspetta l'artista come oggetto con ID; l'ID temporaneo del menu non fa parte del modello.
         const albumToSend = {
             ...album,
             artista: { id: album.artistaId }

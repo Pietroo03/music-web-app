@@ -1,3 +1,4 @@
+// L intestazione coordina navigazione, sessione e pannello profilo con le relative azioni.
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
@@ -6,6 +7,7 @@ import apiFetch from "../../utils/apiFetch";
 const profileApiUrl = `${import.meta.env.VITE_EXPRESS_API_SERVER}/auth/profile`;
 
 function PasswordVisibilityIcon({ visible }) {
+    // Disegna l'icona coerente con lo stato senza dipendere da un'immagine o da un font esterno.
     return (
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
             {visible ? (
@@ -49,6 +51,7 @@ export default function Header() {
     const photoInputRef = useRef(null);
     const cropImageRef = useRef(null);
     const cropDragRef = useRef(null);
+    // Le dimensioni percentuali fanno sì che la foto copra il quadrato di ritaglio anche se è rettangolare.
     const cropImageWidthPercent = photoDimensions
         ? (photoDimensions.width / Math.min(photoDimensions.width, photoDimensions.height)) * 100 * cropZoom
         : 100;
@@ -59,16 +62,19 @@ export default function Header() {
     const cropImageTopPercent = (100 - cropImageHeightPercent) * (cropY / 100);
 
     useEffect(() => {
+        // Chiudere il pannello azzera la modalità modifica, così alla riapertura si torna alla vista profilo.
         if (!isProfileOpen) setIsEditing(false);
     }, [isProfileOpen]);
 
     useEffect(() => {
+        // Ogni messaggio di esito scompare dopo quattro secondi; il cleanup annulla il timer precedente.
         if (!profileNotice) return undefined;
         const timeoutId = window.setTimeout(() => setProfileNotice(""), 4000);
         return () => window.clearTimeout(timeoutId);
     }, [profileNotice]);
 
     useEffect(() => {
+        // Il profilo viene caricato solo con una sessione attiva; isCurrent evita aggiornamenti dopo il cambio utente.
         if (!userRole) {
             setProfile(null);
             setIsProfileOpen(false);
@@ -96,6 +102,7 @@ export default function Header() {
     }, [userRole]);
 
     useEffect(() => {
+        // Click esterno ed Escape chiudono il menu; gli ascoltatori vengono rimossi quando Header esce dal DOM.
         function closeOnOutsideClick(event) {
             if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
                 setIsProfileOpen(false);
@@ -119,6 +126,7 @@ export default function Header() {
     }, [location.pathname]);
 
     function handleLogout() {
+        // Rimuove la sessione dal browser e aggiorna sia il contesto React sia la pagina mostrata.
         localStorage.removeItem("token");
         setUserRole(null);
         setIsProfileOpen(false);
@@ -131,6 +139,7 @@ export default function Header() {
     }
 
     function handlePhotoChange(event) {
+        // Controlli rapidi sul client per feedback immediato; il backend ripete i controlli prima di salvare.
         const file = event.target.files?.[0];
         event.target.value = "";
         if (!file) return;
@@ -163,6 +172,7 @@ export default function Header() {
     }
 
     function handleCropPointerDown(event) {
+        // Memorizza la posizione iniziale del puntatore e quanto l'immagine sporge dal quadrato.
         const image = cropImageRef.current;
         if (!image?.naturalWidth) return;
 
@@ -183,6 +193,7 @@ export default function Header() {
     }
 
     function handleCropPointerMove(event) {
+        // Converte il movimento del mouse/touch in percentuali e limita lo spostamento ai bordi della foto.
         const drag = cropDragRef.current;
         if (!drag || drag.pointerId !== event.pointerId) return;
 
@@ -203,6 +214,7 @@ export default function Header() {
     }
 
     function handleCropKeyDown(event) {
+        // Le frecce spostano il ritaglio anche da tastiera; Shift rende il movimento più ampio.
         const step = event.shiftKey ? 5 : 1;
         const adjustments = {
             ArrowLeft: [step, 0],
@@ -218,6 +230,7 @@ export default function Header() {
     }
 
     async function refreshProfile() {
+        // Rilegge i dati salvati dal server, così l'interfaccia mostra il valore effettivamente persistito.
         const response = await apiFetch(profileApiUrl);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Impossibile aggiornare il profilo.");
@@ -226,6 +239,7 @@ export default function Header() {
     }
 
     async function handleSavePhoto() {
+        // Applica il ritaglio sul canvas del browser e invia al backend solo l'immagine quadrata risultante.
         if (!selectedPhoto || !photoPreview) return;
         setProfileError("");
         setProfileNotice("");
@@ -234,7 +248,8 @@ export default function Header() {
             const image = new Image();
             image.src = photoPreview;
             await image.decode();
-        const cropSize = Math.min(image.naturalWidth, image.naturalHeight) / cropZoom;
+            // sourceX/sourceY sono l'angolo del quadrato ritagliato nell'immagine originale.
+            const cropSize = Math.min(image.naturalWidth, image.naturalHeight) / cropZoom;
             const sourceX = (image.naturalWidth - cropSize) * (cropX / 100);
             const sourceY = (image.naturalHeight - cropSize) * (cropY / 100);
             const canvas = document.createElement("canvas");
@@ -263,6 +278,7 @@ export default function Header() {
     }
 
     async function handleUsernameSubmit(event) {
+        // Dopo l'aggiornamento salva il JWT nuovo perché lo username è il soggetto d'identità del token.
         event.preventDefault();
         setProfileError("");
         setProfileNotice("");
@@ -284,6 +300,7 @@ export default function Header() {
     }
 
     async function handlePasswordSubmit(event) {
+        // Confronta le due nuove password nel client prima di inviare la verifica anche al backend.
         event.preventDefault();
         setProfileError("");
         setProfileNotice("");

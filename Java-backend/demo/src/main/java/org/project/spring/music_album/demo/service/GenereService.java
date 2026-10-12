@@ -17,6 +17,7 @@ public class GenereService {
         this.genereRepository = genereRepository;
     }
 
+    // Metodi di servizio che tengono il controller separato dall'accesso diretto al repository.
     public List<Genere> findAll() {
         return genereRepository.findAll();
     }
@@ -41,6 +42,7 @@ public class GenereService {
         return genereRepository.save(Genere);
     }
 
+    // save inserisce una nuova riga oppure aggiorna quella con lo stesso ID.
     public Genere update(Genere Genere) {
         return genereRepository.save(Genere);
     }

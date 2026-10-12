@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+// Token temporanei per verifica email, recupero password e conferma eliminazione account.
 @Entity
 @Table(name = "account_action_tokens")
 public class AccountActionToken {
@@ -22,13 +23,16 @@ public class AccountActionToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ogni token appartiene a un solo utente; LAZY evita di caricare l'utente se non serve.
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Si salva l'hash del token, non il token utilizzabile presente nel link inviato via email.
     @Column(nullable = false, unique = true, length = 64)
     private String tokenHash;
 
+    // Il nome leggibile dell'enum è memorizzato nel database, invece del suo indice numerico.
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
     private AccountTokenType type;

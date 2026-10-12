@@ -1,3 +1,4 @@
+// Questa pagina carica l elenco degli album dal backend e passa i dati al componente che li visualizza.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react"
 import AlbumsCard from "../components/albumsComponents/AlbumsCard"

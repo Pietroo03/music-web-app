@@ -1,3 +1,4 @@
+// Il modulo controllato raccoglie i campi dell album e inoltra al genitore l invio e i cambiamenti.
 export default function CreateAlbumForm({ formData, handleChange, artisti, generi, loading, handleGeneriChange, handleSubmit }) {
 
     return (

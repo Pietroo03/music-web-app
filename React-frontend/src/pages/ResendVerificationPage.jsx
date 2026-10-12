@@ -1,3 +1,4 @@
+// Questa pagina richiede un nuovo messaggio di verifica per l indirizzo email inserito.
 import { useState } from "react";
 import { Link } from "react-router-dom";
 

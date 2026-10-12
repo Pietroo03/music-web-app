@@ -1,3 +1,4 @@
+// Questa pagina carica gli artisti dal backend e delega la visualizzazione alla scheda dedicata.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react"
 import ArtistsCard from "../components/artistsComponents/ArtistsCard"

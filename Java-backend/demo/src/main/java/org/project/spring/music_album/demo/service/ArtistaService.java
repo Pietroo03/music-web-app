@@ -52,6 +52,7 @@ public class ArtistaService {
         return artistaRepository.save(artista);
     }
 
+    // Aggiorna i campi dell'artista già presente invece di inserire una seconda riga.
     public Artista update(Artista artista) {
         Optional<Artista> artistaEsistente = artistaRepository.findById(artista.getId());
 
@@ -81,6 +82,8 @@ public class ArtistaService {
         }
     }
 
+    // ATTENZIONE: questo metodo elimina anche gli album e i generi associati, non soltanto i collegamenti.
+    // Se un genere è condiviso con altri artisti, cancellarlo qui può rimuoverlo anche dal loro catalogo.
     public void delete(Artista artista) {
 
         for (Album albumDaCancellare : artista.getAlbums()) {
@@ -94,6 +97,7 @@ public class ArtistaService {
         artistaRepository.delete(artista);
     }
 
+    // Questa variante scollega l'artista dai generi, elimina gli album collegati e infine elimina l'artista.
     public void deleteById(Integer id) {
         Artista artista = getById(id);
 

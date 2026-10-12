@@ -1,3 +1,4 @@
+// Questo componente visualizza i dettagli dell artista e le azioni disponibili per il ruolo.
 import { Link } from "react-router-dom"
 
 export default function SingleArtistcard({ artista, userRole, toggleModal, isModalOpen, handleDelete }) {

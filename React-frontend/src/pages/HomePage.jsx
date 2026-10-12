@@ -1,3 +1,4 @@
+// La home verifica la presenza di una sessione JWT e propone i collegamenti alle raccolte principali.
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode"; // Usa questa se il modulo espone 'jwtDecode' come una funzione nominata

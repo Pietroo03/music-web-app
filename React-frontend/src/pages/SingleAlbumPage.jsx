@@ -1,3 +1,4 @@
+// Questa pagina recupera album e tracce, determina il ruolo corrente e coordina le azioni disponibili.
 import apiFetch from "../utils/apiFetch";
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ export default function SingleAlbumPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
 
+    // Carica i campi dell'album dal servizio configurato nell'ambiente Vite.
     useEffect(() => {
         const fetchAlbum = async () => {
             try {
@@ -27,6 +29,7 @@ export default function SingleAlbumPage() {
         fetchAlbum();
     }, [id, albums_api_url]);
 
+    // Il ruolo serve a mostrare o nascondere i controlli admin nella scheda, non sostituisce i controlli backend.
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -42,6 +45,7 @@ export default function SingleAlbumPage() {
     }, []);
 
 
+    // Il secondo endpoint arricchisce i dettagli con la lista di tracce fornita dal servizio esterno.
     useEffect(() => {
         // Funzione per chiamare il backend e prendere dati + tracce da Deezer
         async function fetchTracks() {
@@ -89,6 +93,7 @@ export default function SingleAlbumPage() {
         return <div>Loading...</div>;
     }
 
+    // Converte la durata numerica delle tracce in minuti:secondi, aggiungendo lo zero ai secondi singoli.
     function formatDuration(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;

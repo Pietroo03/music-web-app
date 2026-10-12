@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+// Verifica che l'app si avvii e che gli endpoint rispettino le regole HTTP e di sicurezza attese.
 class DemoApplicationTests {
 
 	@Autowired
@@ -27,16 +28,19 @@ class DemoApplicationTests {
 	private JwtTokenProvider jwtTokenProvider;
 
 	@Test
+	// Controlla che Spring riesca a costruire il contesto completo senza eccezioni all'avvio.
 	void contextLoads() {
 	}
 
 	@Test
+	// Un catalogo protetto non deve essere leggibile da una richiesta anonima.
 	void catalogRequiresAuthentication() throws Exception {
 		mockMvc.perform(get("/api/albums"))
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
+	// Il browser invia una richiesta OPTIONS preliminare prima di alcune chiamate con header Authorization.
 	void browserCanPreflightBearerTokenRequests() throws Exception {
 		mockMvc.perform(options("/api/albums")
 					.header("Origin", "http://localhost:5173")
@@ -47,6 +51,7 @@ class DemoApplicationTests {
 	}
 
 	@Test
+	// Verifica che un utente autenticato ma senza ruolo ADMIN non possa modificare il catalogo.
 	void catalogChangesRequireAdminAuthority() throws Exception {
 		mockMvc.perform(post("/api/albums")
 					.with(user("regular-user").authorities(() -> "USER"))

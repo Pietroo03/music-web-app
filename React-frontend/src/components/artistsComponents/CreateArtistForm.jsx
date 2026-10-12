@@ -1,3 +1,4 @@
+// Il modulo raccoglie i dati dell artista e le selezioni multiple dei generi.
 export default function CreateArtistForm({ handleSubmit, formData, handleChange, loading, generi, handleGeneriChange }) {
 
     return (

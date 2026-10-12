@@ -1,3 +1,4 @@
+// Questo componente presenta i dettagli dell album, le tracce e i controlli mostrati al ruolo autorizzato.
 import { Link } from "react-router-dom"
 
 export default function SingleAlbumCard({ album, userRole, toggleModal, isModalOpen, handleDelete, tracks, formatDuration }) {

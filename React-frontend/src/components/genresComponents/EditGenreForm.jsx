@@ -1,3 +1,4 @@
+// Il modulo espone il nome del genere e inoltra al genitore cambiamenti e invio.
 export default function EditGenreForm({ handleSubmit, formData, handleChange }) {
 
     return (

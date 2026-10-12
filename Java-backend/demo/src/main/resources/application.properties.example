@@ -1,5 +1,7 @@
 spring.application.name=demo
 
+# Configurazione modello per lo sviluppo: copiare in application.properties e fornire i valori sensibili via ambiente.
+# Database e credenziali non sono inclusi nel repository: Spring li legge dalle variabili indicate.
 # Copy this file to application.properties and set local database credentials.
 spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}

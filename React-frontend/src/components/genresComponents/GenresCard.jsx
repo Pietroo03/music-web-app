@@ -1,3 +1,4 @@
+// Questo componente mostra i generi e presenta la conferma prima dell eliminazione.
 import { Link } from "react-router-dom";
 
 export default function GenresCard({ genres, toggleModal, isModalOpen, setIsModalOpen, selectedGenre, handleDelete }) {

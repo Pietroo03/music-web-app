@@ -1,3 +1,4 @@
+// Questa pagina avvia la cancellazione con password e poi conferma l operazione tramite token email.
 import { useContext, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
@@ -14,6 +15,7 @@ export default function AccountDeletionPage() {
     const [isDeleted, setIsDeleted] = useState(false);
     const { loadUserRole } = useContext(AuthContext);
 
+    // Primo passaggio: conferma l'identità con la password e richiede via API un link email di cancellazione.
     async function handleRequest(event) {
         event.preventDefault();
         setError("");
@@ -33,6 +35,7 @@ export default function AccountDeletionPage() {
         }
     }
 
+    // Secondo passaggio: il link porta un token monouso; se valido, rimuove sessione e ruolo locale.
     async function handleConfirm() {
         setError("");
         try {

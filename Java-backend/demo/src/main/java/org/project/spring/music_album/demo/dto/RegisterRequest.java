@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// Forma JSON accettata dall'endpoint di registrazione; le annotazioni bloccano input incompleti o troppo lunghi.
 public class RegisterRequest {
     @NotBlank
     @Size(max = 50)
@@ -18,6 +19,7 @@ public class RegisterRequest {
     @Size(max = 254)
     private String email;
 
+    // Facoltativa: il backend la confronta con la chiave configurata prima di assegnare il ruolo ADMIN.
     private String adminKey;
 
     public String getUsername() {

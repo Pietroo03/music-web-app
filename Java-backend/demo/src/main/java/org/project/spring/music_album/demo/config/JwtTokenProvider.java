@@ -32,12 +32,12 @@ public class JwtTokenProvider {
         this.userDetailsService = userDetailsService;
     }
 
-    // Genera il token JWT
+    // Firma un token con identità, ruoli, versione e scadenza per autenticare le richieste successive.
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime); // Impostiamo la scadenza del token
 
-        // Aggiungi i ruoli dell'utente al payload
+        // I ruoli sono claims del token e vengono riutilizzati nei controlli di autorizzazione.
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                 .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Estrai il nome utente dal token
+    // In questo progetto il subject del token è lo username.
     public String getUsernameFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getSubject();
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
         return expiration.before(new Date());
     }
 
-    // Controlla se il token è valido
+    // Il parser controlla firma e struttura; le eccezioni indicano un token non utilizzabile.
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
@@ -85,7 +85,7 @@ public class JwtTokenProvider {
         }
     }
 
-    // Estrai il token dalla richiesta HTTP
+    // Accetta Authorization: Bearer <token> e restituisce solo il token, senza il prefisso.
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -94,7 +94,7 @@ public class JwtTokenProvider {
         return null;
     }
 
-    // Ottieni l'autenticazione (crea un oggetto Authentication)
+    // Ricarica l'utente e confronta tokenVersion per poter revocare i token già emessi.
     public Authentication getAuthentication(String token) {
         String username = getUsernameFromToken(token); // Ottieni il nome utente dal token
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

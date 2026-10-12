@@ -1,3 +1,5 @@
+// Qui si definiscono gli URL dell'app e si associa ogni URL alla pagina React da mostrare.
+// Le pagine amministrative sono avvolte da ProtectedRoute, che controlla il ruolo prima di renderizzarle.
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './layout/AppLayout'
@@ -27,6 +29,7 @@ function App() {
 
     <>
       <BrowserRouter>
+        {/* AppLayout mantiene cornice e navigazione comuni mentre Outlet cambia pagina. */}
         <Routes>
           <Route element={<AppLayout />}>
 

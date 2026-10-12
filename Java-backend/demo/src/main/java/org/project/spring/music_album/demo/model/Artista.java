@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
+// Questa classe è il modello persistente degli artisti e corrisponde alla tabella artists.
 @Entity
 @Table(name = "artists")
 public class Artista {
@@ -59,10 +60,13 @@ public class Artista {
     @Column(columnDefinition = "TEXT")
     private String descrizione;
 
+    // Relazione inversa: il campo artista dentro Album possiede la chiave esterna artist_id.
+    // mappedBy evita di creare una seconda colonna o tabella per lo stesso legame.
     @OneToMany(mappedBy = "artista")
     @JsonIgnoreProperties("artista")
     private List<Album> albums;
 
+    // La relazione artista-generi è molti-a-molti e viene registrata in una tabella ponte.
     @ManyToMany
     @JoinTable(name = "artist_genre", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genere> generi;

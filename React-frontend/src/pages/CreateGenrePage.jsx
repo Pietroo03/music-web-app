@@ -1,3 +1,4 @@
+// Questa pagina gestisce il modulo per creare un genere e mostra gli esiti della richiesta.
 import apiFetch from "../utils/apiFetch";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

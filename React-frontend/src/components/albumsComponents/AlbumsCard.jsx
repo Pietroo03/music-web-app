@@ -1,3 +1,4 @@
+// Questo componente trasforma l elenco degli album in schede e gestisce la ricerca visibile.
 import { Link } from "react-router-dom"
 
 export default function AlbumCard({ albums, }) {

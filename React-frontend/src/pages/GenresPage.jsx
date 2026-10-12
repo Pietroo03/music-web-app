@@ -1,3 +1,4 @@
+// Questa pagina carica i generi e coordina la selezione, conferma e richiesta di eliminazione.
 import apiFetch from "../utils/apiFetch";
 import { useState, useEffect } from "react";
 import GenresCard from "../components/genresComponents/GenresCard";
@@ -24,11 +25,13 @@ export default function GenresPage() {
         fetchGenres();
     }, [genres_api_url]);
 
+    // Conserva il genere scelto e apre/chiude la finestra di conferma.
     const toggleModal = (genre) => {
         setSelectedGenre(genre);
         setIsModalOpen(!isModalOpen);
     };
 
+    // Elimina l'elemento selezionato e aggiorna lo stato locale senza ricaricare l'intero elenco.
     const handleDelete = async () => {
         if (!selectedGenre) return;
 

@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
+// Un ruolo descrive i permessi assegnati a un account, per esempio USER o ADMIN.
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -24,6 +25,8 @@ public class Role {
     @NotBlank(message = "Inserire un username valido")
     private String nome;
 
+    // Il lato proprietario della relazione è User.roles; qui la lista serve solo alla navigazione Java.
+    // JsonIgnore evita di serializzare gli utenti quando si serializza un ruolo.
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<User> users;

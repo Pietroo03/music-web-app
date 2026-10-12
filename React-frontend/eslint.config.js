@@ -1,3 +1,4 @@
+// Configurazione ESLint: stabilisce le regole statiche applicate ai file JavaScript e React.
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'

@@ -1,5 +1,6 @@
 package org.project.spring.music_album.demo.dto;
 
+// Credenziali inviate dal form di login nel corpo JSON della richiesta.
 public class LoginRequest {
     private String username;
     private String password;

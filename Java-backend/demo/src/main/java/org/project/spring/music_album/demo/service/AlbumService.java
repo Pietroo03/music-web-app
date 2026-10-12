@@ -17,6 +17,7 @@ public class AlbumService {
         this.albumRepository = albumRepository;
     }
 
+    // Elenco usato dal controller: l'ordinamento è definito dal repository, non dalla pagina frontend.
     public List<Album> findAll() {
         return albumRepository.findAllByOrderByArtista_IdAscDataPubblicazioneAsc();
     }
@@ -25,10 +26,12 @@ public class AlbumService {
         return albumRepository.findAll(Sort.by("nome"));
     }
 
+    // Optional permette al controller di restituire 404 quando l'ID non esiste.
     public Optional<Album> findById(Integer id) {
         return albumRepository.findById(id);
     }
 
+    // Variante che presume l'esistenza dell'ID: get() lancia un'eccezione se il record non c'è.
     public Album getById(Integer id) {
         return albumRepository.findById(id).get();
     }
@@ -41,6 +44,8 @@ public class AlbumService {
         return albumRepository.save(Album);
     }
 
+    // Carica prima il record gestito da JPA e copia i campi modificabili, così non si sovrascrivono
+    // relazioni o valori non inviati dal form con null.
     public Album update(Album album) {
         Optional<Album> albumEsistente = albumRepository.findById(album.getId());
 
@@ -54,6 +59,7 @@ public class AlbumService {
             albumDaAggiornare.setTracce(album.getTracce());
             albumDaAggiornare.setDescrizione(album.getDescrizione());
 
+            // Le relazioni si aggiornano solo se la richiesta ne contiene una nuova.
             if (album.getArtista() != null) {
                 albumDaAggiornare.setArtista(album.getArtista());
             }

@@ -38,12 +38,14 @@ public class AlbumRestController {
         this.albumService = albumService;
     }
 
+    // Restituisce il catalogo serializzato in JSON; il service decide l'ordinamento.
     @GetMapping
     public List<Album> index() {
         List<Album> albums = albumService.findAll();
         return albums;
     }
 
+    // Endpoint pubblico volutamente ristretto agli URL delle copertine, usato dallo sfondo prima del login.
     @GetMapping("/covers")
     public List<String> covers() {
         return albumService.findAll().stream()
@@ -52,6 +54,7 @@ public class AlbumRestController {
                 .toList();
     }
 
+    // Cerca l'album locale e poi usa Deezer per arricchire la risposta con le tracce audio.
     @GetMapping("/{id}")
     public ResponseEntity<AlbumDetails> show(@PathVariable Integer id) {
         Optional<Album> albumAttempt = albumService.findById(id);
@@ -62,6 +65,7 @@ public class AlbumRestController {
 
         Album album = albumAttempt.get();
 
+        // La ricerca Deezer usa titolo e alias per individuare l'album esterno più probabile.
         String query = album.getNome() + " " + album.getArtista().getAlias();
         String deezerSearchUrl = "https://api.deezer.com/search/album?q=" +
                 URLEncoder.encode(query, StandardCharsets.UTF_8);
@@ -80,6 +84,7 @@ public class AlbumRestController {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
             }
 
+            // JsonNode legge la risposta esterna senza definire un DTO per tutti i campi Deezer.
             JsonNode searchData = body.path("data");
             if (searchData.isEmpty()) {
                 return new ResponseEntity<>(new AlbumDetails(album, new ArrayList<>()), HttpStatus.OK);
@@ -104,6 +109,7 @@ public class AlbumRestController {
             }
 
             JsonNode tracksData = albumData.path("tracks").path("data");
+            // Riduciamo ogni traccia ai campi usati dalla pagina invece di inoltrare tutto il JSON esterno.
             List<Map<String, Object>> tracks = new ArrayList<>();
             for (JsonNode track : tracksData) {
                 Map<String, Object> trackDetails = new HashMap<>();
@@ -124,11 +130,13 @@ public class AlbumRestController {
         }
     }
 
+    // @Valid controlla i vincoli dell'album prima che il service lo salvi.
     @PostMapping
     public Album store(@Valid @RequestBody Album album) {
         return albumService.create(album);
     }
 
+    // L'ID nell'URL è autorevole: viene copiato nel body prima dell'aggiornamento.
     @PutMapping("/{id}")
     public ResponseEntity<Album> update(@Valid @RequestBody Album album, @PathVariable Integer id) {
 
@@ -141,6 +149,7 @@ public class AlbumRestController {
 
     }
 
+    // Il controllo preliminare trasforma l'ID inesistente in HTTP 404.
     @DeleteMapping("/{id}")
     public ResponseEntity<Album> delete(@Valid @PathVariable Integer id) {
 
